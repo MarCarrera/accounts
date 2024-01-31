@@ -1,0 +1,424 @@
+// ignore_for_file: prefer_typing_uninitialized_variables
+
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+final urlgetAccounts =
+    Uri.parse('https://marcarrera.000webhostapp.com/api-accounts/getAccounts');
+final urlgetAccountByIdAccount = Uri.parse(
+    'https://marcarrera.000webhostapp.com/api-accounts/getAccountByIdAccount');
+final urlupdatePassAccountById = Uri.parse(
+    'https://marcarrera.000webhostapp.com/api-accounts/updatePassAccountByIdAccount');
+final urigetProfiles =
+    Uri.parse('https://marcarrera.000webhostapp.com/api-accounts/getProfiles');
+final urigetProfilesByIdAccount = Uri.parse(
+    'https://marcarrera.000webhostapp.com/api-accounts/getProfilesByIdAccount');
+final urigetProfilesByIdUser = Uri.parse(
+    'https://marcarrera.000webhostapp.com/api-accounts/getProfilesByIdUser');
+final urladdProfile =
+    Uri.parse('https://marcarrera.000webhostapp.com/api-accounts/addProfile');
+final urlupdateProfileByIdUser = Uri.parse(
+    'https://marcarrera.000webhostapp.com/api-accounts/updateProfileByIdUser');
+final urlupdateDataProfileByIdUser = Uri.parse(
+    "https://marcarrera.000webhostapp.com/api-accounts/updateDataProfileByIdUser");
+final urldeleteProfileByIdUser = Uri.parse(
+    'https://marcarrera.000webhostapp.com/api-accounts/deleteProfileByIdUser');
+final urlgetPayments =
+    Uri.parse('https://marcarrera.000webhostapp.com/api-accounts/getPayments');
+final urlgetPaymentsByIdUser = Uri.parse(
+    'https://marcarrera.000webhostapp.com/api-accounts/getPaymentsByIdUser');
+final urlgetPaymentsByIdAccount = Uri.parse(
+    'https://marcarrera.000webhostapp.com/api-accounts/getPaymentsByIdAccountDate');
+final urladdPayment =
+    Uri.parse('https://marcarrera.000webhostapp.com/api-accounts/addPayment');
+
+//------------------------------------------------------------------------------------------------------------
+
+/*final urlAccounts = Uri.parse(
+    'https://marcarrera.000webhostapp.com/accounts-app-flutter/request_accounts.php');
+final urlProfiles = Uri.parse(
+    'https://marcarrera.000webhostapp.com/accounts-app-flutter/request_profiles.php');
+final urlProfilesByAccount = Uri.parse(
+    'https://marcarrera.000webhostapp.com/accounts-app-flutter/request_accounts.php?idAccountUser=');
+final urlPaymentsProfiles = Uri.parse(
+    'https://marcarrera.000webhostapp.com/accounts-app-flutter/request_paymentsProfiles.php');
+final urlPaymentsProfilesByUser = Uri.parse(
+    'https://marcarrera.000webhostapp.com/accounts-app-flutter/request_paymentsProfiles_by_user.php?idUser=1');*/
+
+Future<dynamic> getAccounts() async {
+  /*var data = {
+    'opcion': '1',
+    'correo': parametros["correo"],
+    'contrasena': parametros["contrasena"],
+  };*/
+
+  try {
+    final response = await http.get(
+      urlgetAccounts,
+      //body: data,
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+      return jsonResponse;
+    }
+  } catch (e) {
+    return "err_internet_conex";
+  }
+}
+
+Future<dynamic> getProfiles() async {
+  /*var data = {
+    'opcion': '1',
+    'correo': parametros["correo"],
+    'contrasena': parametros["contrasena"],
+  };*/
+
+  try {
+    final response = await http.post(
+      urigetProfiles,
+      //body: data,
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+      return jsonResponse;
+    }
+  } catch (e) {
+    return "err_internet_conex";
+  }
+}
+
+Future<void> updateAccountData({
+  required String idAccount,
+  required String password,
+}) async {
+  // var url = 'tu_url_de_actualizacion'; // Reemplaza esto con la URL correcta de tu API
+
+  var data = {
+    'idAccount': idAccount,
+    'password': password,
+  };
+
+  try {
+    final response = await http.post(
+      urlupdatePassAccountById,
+      body: data,
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+
+      print('Hecho');
+      print(jsonResponse); // Puedes hacer algo con la respuesta si es necesario
+    } else {
+      // Manejar el caso en el que la solicitud no fue exitosa
+      print('Error en la solicitud HTTP: ${response.statusCode}');
+    }
+  } catch (e) {
+    // Manejar errores de conexión
+    print('Error de conexión: $e');
+  }
+}
+
+Future<dynamic> getProfilesByAccount(String idAccount) async {
+  var data = {
+    //'opcion': '1',
+    'idAccount': idAccount,
+    // 'contrasena': parametros["contrasena"],
+  };
+
+  try {
+    final response = await http.post(
+      urigetProfilesByIdAccount,
+      //Uri.parse(
+      // 'https://marcarrera.000webhostapp.com/accounts-app-flutter/request_profiles_by_account.php?idAccountUser=$idAccount'),
+      body: data,
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+      return jsonResponse;
+    }
+  } catch (e) {
+    return "err_internet_conex";
+  }
+}
+
+Future<dynamic> getPaymentsProfilesByUser(String idUser) async {
+  var data = {
+    // 'opcion': '1',
+    'idUser': idUser,
+    // 'contrasena': parametros["contrasena"],
+  };
+
+  try {
+    final response = await http.post(
+      //Uri.parse("https://marcarrera.000webhostapp.com/accounts-app-flutter/request_paymentsProfiles_by_user.php?idUser=$idUser")
+      urlgetPaymentsByIdUser,
+      body: data,
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+      return jsonResponse;
+    }
+  } catch (e) {
+    return "err_internet_conex";
+  }
+}
+
+Future<dynamic> getPaymentsProfilesByAccountDate(
+    String idAccount, String date1, String date2) async {
+  var data = {
+    // 'opcion': '1',
+    'idAccount': idAccount,
+    'date1': date1,
+    'date2': date2,
+    // 'contrasena': parametros["contrasena"],
+  };
+
+  try {
+    final response = await http.post(
+      //Uri.parse("https://marcarrera.000webhostapp.com/accounts-app-flutter/request_paymentsProfiles_by_user.php?idUser=$idUser")
+      urlgetPaymentsByIdAccount,
+      body: data,
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+      return jsonResponse;
+    }
+  } catch (e) {
+    return "err_internet_conex";
+  }
+}
+
+Future<dynamic> getPaymentsProfiles() async {
+  /*var data = {
+    'opcion': '1',
+    'correo': parametros["correo"],
+    'contrasena': parametros["contrasena"],
+  };*/
+
+  try {
+    final response = await http.post(urlgetPayments
+        //body: data,
+        );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+      return jsonResponse;
+    }
+  } catch (e) {
+    return "err_internet_conex";
+  }
+}
+
+Future<void> addPaymentProfileData(
+    {required String idUser,
+    required String idAccount,
+    required String paymentDate,
+    required String amountPay}) async {
+  // var url = 'tu_url_de_actualizacion'; // Reemplaza esto con la URL correcta de tu API
+
+  var data = {
+    'idUser': idUser,
+    'idAccount': idAccount,
+    'paymentStatus': 'hecho',
+    'paymentDate': paymentDate,
+    'amountPay': amountPay,
+  };
+
+  try {
+    final response = await http.post(
+      urladdPayment,
+      body: data,
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+
+      print('Hecho');
+      print(jsonResponse); // Puedes hacer algo con la respuesta si es necesario
+    } else {
+      // Manejar el caso en el que la solicitud no fue exitosa
+      print('Error en la solicitud HTTP: ${response.statusCode}');
+    }
+  } catch (e) {
+    // Manejar errores de conexión
+    print('Error de conexión: $e');
+  }
+}
+
+Future<void> addProfileData({
+  required String profileUser,
+  required String nameUser,
+  required String paymentDateUser,
+  required String amount,
+  required String phoneUser,
+  required String pinUser,
+  required String statusUser,
+  required String idAccountUser,
+  required String genre,
+}) async {
+  // var url = 'tu_url_de_actualizacion'; // Reemplaza esto con la URL correcta de tu API
+
+  var data = {
+    'profileUser': profileUser,
+    'nameUser': nameUser,
+    'paymentDateUser': paymentDateUser,
+    'amount': amount,
+    'phoneUser': phoneUser,
+    'pinUser': pinUser,
+    'statusUser': statusUser,
+    'idAccountUser': idAccountUser,
+    'genre': genre,
+  };
+
+  try {
+    final response = await http.post(
+      urladdProfile,
+      body: data,
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+
+      print('Hecho');
+      print(jsonResponse); // Puedes hacer algo con la respuesta si es necesario
+    } else {
+      // Manejar el caso en el que la solicitud no fue exitosa
+      print('Error en la solicitud HTTP: ${response.statusCode}');
+    }
+  } catch (e) {
+    // Manejar errores de conexión
+    print('Error de conexión: $e');
+  }
+}
+
+//UPDATE DATA===================================================================================
+Future<void> updateProfileData({
+  required String idUser,
+  required String nameUser,
+  required String paymentDateUser,
+  required String amount,
+  required String phoneUser,
+  required String pinUser,
+  required String statusUser,
+  required String genre,
+}) async {
+  // var url = 'tu_url_de_actualizacion'; // Reemplaza esto con la URL correcta de tu API
+
+  var data = {
+    'idUser': idUser,
+    'nameUser': nameUser,
+    'paymentDateUser': paymentDateUser,
+    'amount': amount,
+    'phoneUser': phoneUser,
+    'pinUser': pinUser,
+    'statusUser': statusUser,
+    'genre': genre,
+  };
+
+  try {
+    final response = await http.post(
+      urlupdateProfileByIdUser,
+      body: data,
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+
+      print('Hecho');
+      print(jsonResponse); // Puedes hacer algo con la respuesta si es necesario
+    } else {
+      // Manejar el caso en el que la solicitud no fue exitosa
+      print('Error en la solicitud HTTP: ${response.statusCode}');
+    }
+  } catch (e) {
+    // Manejar errores de conexión
+    print('Error de conexión: $e');
+  }
+}
+
+Future<void> updateDateProfileData({
+  required String idUser,
+  /* required String nameUser,
+  required String paymentDateUser,
+  required String amount,
+  required String phoneUser,
+  required String pinUser,
+  required String statusUser,
+  required String genre,*/
+}) async {
+  // var url = 'tu_url_de_actualizacion'; // Reemplaza esto con la URL correcta de tu API
+
+  var data = {
+    'idUser': idUser,
+    'nameUser': " ",
+    'paymentDateUser': " ",
+    'amount': " ",
+    'phoneUser': " ",
+    'statusUser': "Libre",
+    'genre': " ",
+  };
+
+  try {
+    final response = await http.post(
+      urlupdateDataProfileByIdUser,
+      body: data,
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+
+      print('Hecho');
+      print(jsonResponse); // Puedes hacer algo con la respuesta si es necesario
+    } else {
+      // Manejar el caso en el que la solicitud no fue exitosa
+      print('Error en la solicitud HTTP: ${response.statusCode}');
+    }
+  } catch (e) {
+    // Manejar errores de conexión
+    print('Error de conexión: $e');
+  }
+}
+
+Future<void> deleteProfileByUser({
+  required String idUser,
+  /* required String nameUser,
+  required String paymentDateUser,
+  required String amount,
+  required String phoneUser,
+  required String pinUser,
+  required String statusUser,
+  required String genre,*/
+}) async {
+  // var url = 'tu_url_de_actualizacion'; // Reemplaza esto con la URL correcta de tu API
+
+  var data = {
+    'idUser': idUser,
+  };
+
+  try {
+    final response = await http.post(
+      urldeleteProfileByIdUser,
+      body: data,
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+
+      print('Hecho');
+      print(jsonResponse); // Puedes hacer algo con la respuesta si es necesario
+    } else {
+      // Manejar el caso en el que la solicitud no fue exitosa
+      print('Error en la solicitud HTTP: ${response.statusCode}');
+    }
+  } catch (e) {
+    // Manejar errores de conexión
+    print('Error de conexión: $e');
+  }
+}
+   

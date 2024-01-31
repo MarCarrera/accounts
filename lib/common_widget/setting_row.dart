@@ -13,26 +13,49 @@ class SettingRow extends StatelessWidget {
     return InkWell(
       onTap: onPressed,
       child: SizedBox(
-        height: 30,
+        height: 48,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Image.asset(icon,
-                height: 15, width: 15, fit: BoxFit.contain),
+                height: 22, width: 22, fit: BoxFit.contain),
             const SizedBox(
-              width: 15,
+              width: 22,
             ),
             Expanded(
               child: Text(
                 title,
                 style: TextStyle(
                   color: TColor.black,
-                  fontSize: 12,
+                  fontSize: 19,
                 ),
               ),
             ),
-            Image.asset("assets/img/p_next.png",
-                height: 12, width: 12, fit: BoxFit.contain)
+            Row(
+              children: [
+                SizedBox(
+                  height: 38,
+                  width: 26,
+                  child: Icon(
+                    Icons.remove_red_eye,
+                    color: TColor.black,
+                    size: 22,
+                  ),
+                ),
+                const SizedBox(
+              width: 22,
+            ),
+                SizedBox(
+                  height: 38,
+                  width: 26,
+                  child: Icon(
+                    Icons.copy,
+                    color: TColor.black,
+                    size: 22,
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
