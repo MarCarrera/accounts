@@ -282,10 +282,33 @@ class _HomeViewState extends State<HomeView> {
                     ),
                   ),
                   //CARD CUENTAS------------------------------------------------------------------
-              
-              
-              
- 
+
+                  //---------------PRUEBA------------
+                  /*
+                  
+                    @override
+                      Widget build(BuildContext context) {
+                        return Scaffold(
+                          appBar: AppBar(
+                            title: Text('Tus cuentas'),
+                          ),
+                          body: ListView.builder(
+                            itemCount: arrayidAccount.length,
+                            itemBuilder: (context, index) {
+                              return Card(
+                                child: ListTile(
+                                  title: Text(arraynameAccount[index]),
+                                  subtitle: Text('ID: ${arrayidAccount[index]}'),
+                                  // Puedes agregar más widgets ListTile según necesites
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      }
+                    } */
+
+                  //--------------------------------
                     SizedBox(
                       height: media.width * 0.05,
                     ),
