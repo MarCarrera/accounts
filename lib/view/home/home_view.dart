@@ -268,7 +268,7 @@ class _HomeViewState extends State<HomeView> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        "Account",
+                                        arraynameAccount[index],
                                         style: TextStyle(
                                               color: TColor.black,
                                               fontSize: 16,
