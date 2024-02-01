@@ -268,13 +268,12 @@ class _HomeViewState extends State<HomeView> {
                         ListView.builder(
                           physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
-                          itemCount: accountArr.length,
+                          itemCount: arrayidAccount.length,
                           itemBuilder: (context, index) {
-                            var iObj = accountArr[index] as Map? ?? {};
                             return SettingRow(
-                              icon: iObj["image"].toString(),
-                              title: iObj["name"].toString(),
-                              onPressed: () {print('seleccionado:::: ${iObj["name"].toString()}');},
+                              nameAccount: arraynameAccount[index],
+                              onPressed: () {print('seleccionado:::: ${arraynameAccount[index]}');}, 
+                              pass: arraypassword[index], paymentDate: arraypaymentAccount[index], banck: arrayBanks[index],
                             );
                           },
                         )

@@ -2,29 +2,34 @@ import 'package:flutter/material.dart';
 
 import '../common/colo_extension.dart';
 
-class SettingRow extends StatelessWidget {
-  final String icon;
-  final String title;
+class SettingRow extends StatefulWidget {
+  final String pass;
+  final String nameAccount;
+  final String paymentDate;
+  final String banck;
   final VoidCallback onPressed;
-  const SettingRow({super.key, required this.icon, required this.title, required this.onPressed });
+  const SettingRow({super.key, required this.onPressed, required this.pass, required this.nameAccount, required this.paymentDate, required this.banck });
 
+  @override
+  State<SettingRow> createState() => _SettingRowState();
+}
+
+class _SettingRowState extends State<SettingRow> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onPressed,
+      onTap: widget.onPressed,
       child: SizedBox(
         height: 48,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.asset(icon,
-                height: 22, width: 22, fit: BoxFit.contain),
             const SizedBox(
               width: 22,
             ),
             Expanded(
               child: Text(
-                title,
+                widget.nameAccount,
                 style: TextStyle(
                   color: TColor.black,
                   fontSize: 19,

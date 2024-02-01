@@ -190,7 +190,7 @@ class _ProfileViewState extends State<ProfileView> {
                     const SizedBox(
                       height: 8,
                     ),
-                    ListView.builder(
+                    /*ListView.builder(
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemCount: accountArr.length,
@@ -202,7 +202,7 @@ class _ProfileViewState extends State<ProfileView> {
                           onPressed: () {},
                         );
                       },
-                    )
+                    )*/
                   ],
                 ),
               ),
@@ -339,7 +339,7 @@ class _ProfileViewState extends State<ProfileView> {
                     const SizedBox(
                       height: 8,
                     ),
-                    ListView.builder(
+                    /*ListView.builder(
                       physics: const NeverScrollableScrollPhysics(),
                       padding: EdgeInsets.zero,
                       shrinkWrap: true,
@@ -352,7 +352,7 @@ class _ProfileViewState extends State<ProfileView> {
                           onPressed: () {},
                         );
                       },
-                    )
+                    )*/
                   ],
                 ),
               )
