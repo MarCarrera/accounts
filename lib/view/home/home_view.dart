@@ -242,27 +242,7 @@ class _HomeViewState extends State<HomeView> {
                     height: 25,
                   ),
                   //CARD CUENTAS------------------------------------------------------------------
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                    decoration: BoxDecoration(
-                        color: TColor.white,
-                        borderRadius: BorderRadius.circular(15),
-                        boxShadow: const [
-                          BoxShadow(color: Colors.black12, blurRadius: 2)
-                        ]),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Account",
-                          style: TextStyle(
-                            color: TColor.black,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(
+                  const SizedBox(
                           height: 8,
                         ),
                         ListView.builder(
@@ -270,16 +250,55 @@ class _HomeViewState extends State<HomeView> {
                           shrinkWrap: true,
                           itemCount: arrayidAccount.length,
                           itemBuilder: (context, index) {
-                            return SettingRow(
-                              nameAccount: arraynameAccount[index],
-                              onPressed: () {print('seleccionado:::: ${arraynameAccount[index]}');}, 
-                              pass: arraypassword[index], paymentDate: arraypaymentAccount[index], banck: arrayBanks[index],
+                            return Column(
+                              children: [
+                                const SizedBox(
+                                height: 20,
+                              ),
+                                Container(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                                  decoration: BoxDecoration(
+                                      color: TColor.white,
+                                      borderRadius: BorderRadius.circular(15),
+                                      boxShadow: const [
+                                        BoxShadow(color: Colors.black12, blurRadius: 2)
+                                      ]),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Account",
+                                        style: TextStyle(
+                                              color: TColor.black,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 8,
+                                      ),
+                                      ListView.builder(
+                                        physics: const NeverScrollableScrollPhysics(),
+                                        shrinkWrap: true,
+                                        itemCount: arrayidAccount.length,
+                                        itemBuilder: (context, index) {
+                                              return SettingRow(
+                                                nameAccount: arraynameAccount[index],
+                                                onPressed: () {print('seleccionado:::: ${arraynameAccount[index]}');}, 
+                                                pass: arraypassword[index], paymentDate: arraypaymentAccount[index], banck: arrayBanks[index],
+                                              );
+                                        },
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ],
                             );
                           },
-                        )
-                      ],
-                    ),
-                  ),
+                        ),
+                  
+                  
                   //CARD CUENTAS------------------------------------------------------------------
 
                   //---------------PRUEBA------------
