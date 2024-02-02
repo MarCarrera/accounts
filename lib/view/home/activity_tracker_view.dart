@@ -1,5 +1,10 @@
+import 'package:fitness/common_widget/setting_row.dart';
+import 'package:fitness/common_widget/workout_row.dart';
+import 'package:fitness/request/api_request.dart';
+import 'package:fitness/view/home/finished_workout_view.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../common/colo_extension.dart';
 import '../../common_widget/latest_activity_row.dart';
@@ -33,6 +38,61 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
       "time": "About 3 hours ago"
     },
   ];
+  String date1 = '2024-01-01';
+
+  String date2 = '2024-01-31';
+  
+  // String date1 = DateFormat('yyyy-MM-dd')
+  //     .format(DateTime(DateTime.now().year, DateTime.now().month, 1));
+
+  // String date2 = DateFormat('yyyy-MM-dd').format(DateTime.now());
+   //pagos de usuarios cuenta A-----------------------------------
+  List<String> paymentDateAccountA = [];
+  List<String> arrayNameUsersAccountA = [];
+  List<String> arrayPaymentAmountA = [];
+  double totalPaymentA = 0.0;
+  bool showDataPaymentA = false;
+  List<double> arrayTotalPay = [];
+  //OBTENER PAGOS DE CUENTA-------------------------------
+  Future<void> obtenerPagosCuenta(String date1, String date2) async {
+    var response = await getPaymentsProfilesByAccountDate('1', date1, date2);
+    if (response != "err_internet_conex") {
+      print('Respuesta pagos cuenta :::: $response');
+      setState(() {
+        //isLoading = false;
+        if (response == 'empty') {
+        } else {
+          paymentDateAccountA.clear();
+          arrayNameUsersAccountA.clear();
+          arrayPaymentAmountA.clear();
+          totalPaymentA = 0.0;
+          // arrayTotalPay.clear();
+
+          if (paymentDateAccountA.isEmpty &&
+              arrayNameUsersAccountA.isEmpty &&
+              arrayPaymentAmountA.isEmpty) {
+            for (int i = 0; i < response.length; i++) {
+              paymentDateAccountA.add(response[i]['paymentDate'].toString());
+              arrayNameUsersAccountA.add(response[i]['nameUser'].toString());
+              arrayPaymentAmountA.add(response[i]['amountPay'].toString());
+              double? amountPayA = double.tryParse(response[i]['amountPay']);
+              totalPaymentA += amountPayA ?? 0.0;
+            }
+            arrayTotalPay.add(totalPaymentA);
+            print("total pago a::::: $totalPaymentA ");
+          }
+        }
+      });
+    } else {
+      print('Sin conexion');
+    }
+  }
+  //------------------------------------------------------
+  @override
+  void initState() {
+    super.initState();
+    obtenerPagosCuenta(date1, date2);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -168,203 +228,74 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
                           ),
                         ),
                       ],
+                    ),
+                    //LISTA DE PAGOS-------------------------------
+                    ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: paymentDateAccountA.length,
+                      itemBuilder: (context, index) {
+                        return SettingRow(
+                          onPressed: () {
+                            print(
+                                'seleccionado:::: ${paymentDateAccountA[index]}');
+                          }, paymentDate: paymentDateAccountA[index], 
+                          nameUser: arrayNameUsersAccountA[index], 
+                          paymentAmount: arrayPaymentAmountA[index],
+                         
+                        );
+                      },
                     )
+                    
                   ],
                 ),
               ),
               SizedBox(
-                height: media.width * 0.1,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Activity  Progress",
-                    style: TextStyle(
-                        color: TColor.black,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700),
-                  ),
-                  Container(
-                      height: 30,
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(colors: TColor.primaryG),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton(
-                          items: ["Weekly", "Monthly"]
-                              .map((name) => DropdownMenuItem(
-                                    value: name,
-                                    child: Text(
-                                      name,
-                                      style: TextStyle(
-                                          color: TColor.gray, fontSize: 14),
-                                    ),
-                                  ))
-                              .toList(),
-                          onChanged: (value) {},
-                          icon: Icon(Icons.expand_more, color: TColor.white),
-                          hint: Text(
-                            "Weekly",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: TColor.white, fontSize: 12),
-                          ),
-                        ),
-                      )),
-                ],
-              ),
-
-              SizedBox(
                 height: media.width * 0.05,
               ),
-
-              Container(
-                height: media.width * 0.5,
-                padding: const EdgeInsets.symmetric(vertical: 15 , horizontal: 0),
-                decoration: BoxDecoration(
-                    color: TColor.white,
-                    borderRadius: BorderRadius.circular(15),
-                    boxShadow: const [
-                      BoxShadow(color: Colors.black12, blurRadius: 3)
-                    ]),
-                    child: BarChart(
-                      
-                      BarChartData(
-                  barTouchData: BarTouchData(
-                    touchTooltipData: BarTouchTooltipData(
-                      tooltipBgColor: Colors.grey,
-                      tooltipHorizontalAlignment: FLHorizontalAlignment.right,
-                      tooltipMargin: 10,
-                      getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                        String weekDay;
-                        switch (group.x) {
-                          case 0:
-                            weekDay = 'Monday';
-                            break;
-                          case 1:
-                            weekDay = 'Tuesday';
-                            break;
-                          case 2:
-                            weekDay = 'Wednesday';
-                            break;
-                          case 3:
-                            weekDay = 'Thursday';
-                            break;
-                          case 4:
-                            weekDay = 'Friday';
-                            break;
-                          case 5:
-                            weekDay = 'Saturday';
-                            break;
-                          case 6:
-                            weekDay = 'Sunday';
-                            break;
-                          default:
-                            throw Error();
-                        }
-                        return BarTooltipItem(
-                          '$weekDay\n',
-                          const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                          children: <TextSpan>[
-                            TextSpan(
-                              text: (rod.toY - 1).toString(),
-                              style: TextStyle(
-                                color: TColor.white,
+              Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Latest Workout",
+                            style: TextStyle(
+                                color: TColor.black,
                                 fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
+                                fontWeight: FontWeight.w700),
+                          ),
+                          TextButton(
+                            onPressed: () {},
+                            child: Text(
+                              "See More",
+                              style: TextStyle(
+                                  color: TColor.gray,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700),
                             ),
-                          ],
-                        );
-                      },
-                    ),
-                    touchCallback: (FlTouchEvent event, barTouchResponse) {
-                      setState(() {
-                        if (!event.isInterestedForInteractions ||
-                            barTouchResponse == null ||
-                            barTouchResponse.spot == null) {
-                          touchedIndex = -1;
-                          return;
-                        }
-                        touchedIndex =
-                            barTouchResponse.spot!.touchedBarGroupIndex;
-                      });
-                    },
-                  ),
-                  titlesData: FlTitlesData(
-                    show: true,
-                    rightTitles:  AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    topTitles:  AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: getTitles,
-                        reservedSize: 38,
+                          )
+                        ],
                       ),
-                    ),
-                    leftTitles:  AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: false,
+                      ListView.builder(
+                          padding: EdgeInsets.zero,
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: 5,
+                          itemBuilder: (context, index) {
+                            return InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const FinishedWorkoutView(),
+                                    ),
+                                  );
+                                },
+                                child: WorkoutRow());
+                          }),
+                      SizedBox(
+                        height: media.width * 0.1,
                       ),
-                    ),
-                  ),
-                  borderData: FlBorderData(
-                    show: false,
-                  ),
-                  barGroups: showingGroups(),
-                  gridData:  FlGridData(show: false),
-                )
-                    
-                  ),
-              ),
-              
-              SizedBox(
-                height: media.width * 0.05,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Latest Workout",
-                    style: TextStyle(
-                        color: TColor.black,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700),
-                  ),
-                  TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      "See More",
-                      style: TextStyle(
-                          color: TColor.gray,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700),
-                    ),
-                  )
-                ],
-              ),
-              ListView.builder(
-                  padding: EdgeInsets.zero,
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: latestArr.length,
-                  itemBuilder: (context, index) {
-                    var wObj = latestArr[index] as Map? ?? {};
-                    return LatestActivityRow(wObj: wObj);
-                  }),
-              SizedBox(
-                height: media.width * 0.1,
-              ),
             ],
           ),
         ),

@@ -29,13 +29,8 @@ class _HomeViewState extends State<HomeView> {
   List<String> arraypaymentAccount = [];
   List<String> arraypassword = [];
   List<String> arrayBanks = [];
-  List<double> arrayTotalPay = [];
-  //pagos de usuarios cuenta A-----------------------------------
-  List<String> paymentDateAccountA = [];
-  List<String> arrayNameUsersAccountA = [];
-  List<String> arrayPaymentAmountA = [];
-  double totalPaymentA = 0.0;
-  bool showDataPaymentA = false;
+  
+ 
 
   List<String> paymentDateAccountB = [];
   List<String> arrayNameUsersAccountB = [];
@@ -51,7 +46,7 @@ class _HomeViewState extends State<HomeView> {
   Future<void> obtenerCuentas() async {
     var response = await getAccounts();
     if (response != "err_internet_conex") {
-      print('Respuesta cuentas:::: $response');
+      //print('Respuesta cuentas:::: $response');
       setState(() {
         //isLoading = false;
         if (response == 'empty') {
@@ -249,50 +244,6 @@ class _HomeViewState extends State<HomeView> {
                       //CARD CUENTAS------------------------------------------------------------------
 
                       SizedBox(
-                        height: media.width * 0.05,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Latest Workout",
-                            style: TextStyle(
-                                color: TColor.black,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700),
-                          ),
-                          TextButton(
-                            onPressed: () {},
-                            child: Text(
-                              "See More",
-                              style: TextStyle(
-                                  color: TColor.gray,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700),
-                            ),
-                          )
-                        ],
-                      ),
-                      ListView.builder(
-                          padding: EdgeInsets.zero,
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: lastWorkoutArr.length,
-                          itemBuilder: (context, index) {
-                            var wObj = lastWorkoutArr[index] as Map? ?? {};
-                            return InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const FinishedWorkoutView(),
-                                    ),
-                                  );
-                                },
-                                child: WorkoutRow(wObj: wObj));
-                          }),
-                      SizedBox(
                         height: media.width * 0.1,
                       ),
                     ],
@@ -395,18 +346,6 @@ class _HomeViewState extends State<HomeView> {
                     color: Colors.black,
                   ),
                   OptionsAccount(context, responsiveHeight, index)
-                  /*ListView.builder(
-                                      physics: const NeverScrollableScrollPhysics(),
-                                      shrinkWrap: true,
-                                      itemCount: arrayidAccount.length,
-                                      itemBuilder: (context, index) {
-                                            return SettingRow(
-                                              nameAccount: arraynameAccount[index],
-                                              onPressed: () {print('seleccionado:::: ${arraynameAccount[index]}');}, 
-                                              pass: arraypassword[index], paymentDate: arraypaymentAccount[index], banck: arrayBanks[index],
-                                            );
-                                      },
-                                    )*/
                 ],
               ),
             ),
