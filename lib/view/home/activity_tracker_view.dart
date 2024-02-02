@@ -2,6 +2,7 @@ import 'package:fitness/common_widget/setting_row.dart';
 import 'package:fitness/common_widget/workout_row.dart';
 import 'package:fitness/request/api_request.dart';
 import 'package:fitness/view/home/finished_workout_view.dart';
+import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -16,7 +17,8 @@ class ActivityTrackerView extends StatefulWidget {
   final String idAccount;
 
   @override
-  State<ActivityTrackerView> createState() => _ActivityTrackerViewState(idAccount);
+  State<ActivityTrackerView> createState() =>
+      _ActivityTrackerViewState(idAccount);
 }
 
 class _ActivityTrackerViewState extends State<ActivityTrackerView> {
@@ -24,7 +26,7 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
   _ActivityTrackerViewState(this.idAccount);
   final String idAccount;
 
-    int touchedIndex = -1;
+  int touchedIndex = -1;
 
   List latestArr = [
     {
@@ -38,15 +40,21 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
       "time": "About 3 hours ago"
     },
   ];
-  String date1 = '2024-01-01';
 
-  String date2 = '2024-01-31';
-  
-  // String date1 = DateFormat('yyyy-MM-dd')
-  //     .format(DateTime(DateTime.now().year, DateTime.now().month, 1));
+  DateTime d = DateTime.now();
+  String valueText = '';
+  String startDate = '';
+  String endDate = '';
+  List<DateTime?> _dialogCalendarPickerValue = [
+    DateTime(DateTime.now().year, DateTime.now().month, 1),
+    DateTime.now(),
+  ];
 
-  // String date2 = DateFormat('yyyy-MM-dd').format(DateTime.now());
-   //pagos de usuarios cuenta A-----------------------------------
+  String date1 = DateFormat('yyyy-MM-dd')
+      .format(DateTime(DateTime.now().year, DateTime.now().month, 1));
+
+  String date2 = DateFormat('yyyy-MM-dd').format(DateTime.now());
+  //pagos de usuarios cuenta A-----------------------------------
   List<String> paymentDateAccountA = [];
   List<String> arrayNameUsersAccountA = [];
   List<String> arrayPaymentAmountA = [];
@@ -87,6 +95,7 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
       print('Sin conexion');
     }
   }
+
   //------------------------------------------------------
   @override
   void initState() {
@@ -123,7 +132,7 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
           ),
         ),
         title: Text(
-          "Activity Tracker",
+          "Control de Pagos",
           style: TextStyle(
               color: TColor.black, fontSize: 16, fontWeight: FontWeight.w700),
         ),
@@ -154,6 +163,19 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
           padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 25),
           child: Column(
             children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  buildCalendarDialogButton(),
+                  DateButton(),
+                  SearchButton(),
+                ],
+              ),
+              SizedBox(
+                height: 14,
+              ),
+              //CONTENEDOR DE TARJETA O CARD DE PAGOS
               Container(
                 padding:
                     const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
@@ -176,33 +198,6 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
                               fontSize: 14,
                               fontWeight: FontWeight.w700),
                         ),
-                        SizedBox(
-                          width: 30,
-                          height: 30,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: TColor.primaryG,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: MaterialButton(
-                                onPressed: () {},
-                                padding: EdgeInsets.zero,
-                                height: 30,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(25)),
-                                textColor: TColor.primaryColor1,
-                                minWidth: double.maxFinite,
-                                elevation: 0,
-                                color: Colors.transparent,
-                                child: const Icon(
-                                  Icons.add,
-                                  color: Colors.white,
-                                  size: 15,
-                                )),
-                          ),
-                        )
                       ],
                     ),
                     const SizedBox(
@@ -239,14 +234,13 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
                           onPressed: () {
                             print(
                                 'seleccionado:::: ${paymentDateAccountA[index]}');
-                          }, paymentDate: paymentDateAccountA[index], 
-                          nameUser: arrayNameUsersAccountA[index], 
+                          },
+                          paymentDate: paymentDateAccountA[index],
+                          nameUser: arrayNameUsersAccountA[index],
                           paymentAmount: arrayPaymentAmountA[index],
-                         
                         );
                       },
                     )
-                    
                   ],
                 ),
               ),
@@ -254,51 +248,103 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
                 height: media.width * 0.05,
               ),
               Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Latest Workout",
-                            style: TextStyle(
-                                color: TColor.black,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700),
-                          ),
-                          TextButton(
-                            onPressed: () {},
-                            child: Text(
-                              "See More",
-                              style: TextStyle(
-                                  color: TColor.gray,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700),
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Usuarios de la cuenta",
+                    style: TextStyle(
+                        color: TColor.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700),
+                  ),
+                ],
+              ),
+              ListView.builder(
+                  padding: EdgeInsets.zero,
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: 5,
+                  itemBuilder: (context, index) {
+                    return InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const FinishedWorkoutView(),
                             ),
-                          )
-                        ],
-                      ),
-                      ListView.builder(
-                          padding: EdgeInsets.zero,
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: 5,
-                          itemBuilder: (context, index) {
-                            return InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const FinishedWorkoutView(),
-                                    ),
-                                  );
-                                },
-                                child: WorkoutRow());
-                          }),
-                      SizedBox(
-                        height: media.width * 0.1,
-                      ),
+                          );
+                        },
+                        child: WorkoutRow());
+                  }),
+              SizedBox(
+                height: media.width * 0.1,
+              ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  SizedBox DateButton() {
+    return SizedBox(
+      width: 250,
+      height: 50,
+      child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: TColor.primaryG,
+            ),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: MaterialButton(
+            onPressed: () {},
+            padding: EdgeInsets.zero,
+            height: 30,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+            textColor: Colors.white,
+            minWidth: double.maxFinite,
+            elevation: 0,
+            color: Colors.transparent,
+            child: Text(
+              startDate == '' ? '$date1 a $date2' : '$startDate a $endDate',
+              style: TextStyle(fontSize: 18),
+            ),
+          )),
+    );
+  }
+
+  SizedBox SearchButton() {
+    return SizedBox(
+      width: 50,
+      height: 50,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: TColor.primaryG,
+          ),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: MaterialButton(
+            onPressed: () {
+              print('fechas seleccionadas:::: $startDate y $endDate');
+              print('obteniendo pagos...');
+              obtenerPagosCuenta(startDate, endDate);
+            },
+            padding: EdgeInsets.zero,
+            height: 30,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+            textColor: TColor.primaryColor1,
+            minWidth: double.maxFinite,
+            elevation: 0,
+            color: Colors.transparent,
+            child: const Icon(
+              Icons.search,
+              color: Colors.white,
+              size: 30,
+            )),
       ),
     );
   }
@@ -312,28 +358,28 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
     Widget text;
     switch (value.toInt()) {
       case 0:
-        text =  Text('Sun', style: style);
+        text = Text('Sun', style: style);
         break;
       case 1:
-        text =  Text('Mon', style: style);
+        text = Text('Mon', style: style);
         break;
       case 2:
-        text =  Text('Tue', style: style);
+        text = Text('Tue', style: style);
         break;
       case 3:
-        text =  Text('Wed', style: style);
+        text = Text('Wed', style: style);
         break;
       case 4:
-        text =  Text('Thu', style: style);
+        text = Text('Thu', style: style);
         break;
       case 5:
-        text =  Text('Fri', style: style);
+        text = Text('Fri', style: style);
         break;
       case 6:
-        text =  Text('Sat', style: style);
+        text = Text('Sat', style: style);
         break;
       default:
-        text =  Text('', style: style);
+        text = Text('', style: style);
         break;
     }
     return SideTitleWidget(
@@ -342,44 +388,52 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
       child: text,
     );
   }
-   List<BarChartGroupData> showingGroups() => List.generate(7, (i) {
+
+  List<BarChartGroupData> showingGroups() => List.generate(7, (i) {
         switch (i) {
           case 0:
-            return makeGroupData(0, 5, TColor.primaryG , isTouched: i == touchedIndex);
+            return makeGroupData(0, 5, TColor.primaryG,
+                isTouched: i == touchedIndex);
           case 1:
-            return makeGroupData(1, 10.5, TColor.secondaryG, isTouched: i == touchedIndex);
+            return makeGroupData(1, 10.5, TColor.secondaryG,
+                isTouched: i == touchedIndex);
           case 2:
-            return makeGroupData(2, 5, TColor.primaryG , isTouched: i == touchedIndex);
+            return makeGroupData(2, 5, TColor.primaryG,
+                isTouched: i == touchedIndex);
           case 3:
-            return makeGroupData(3, 7.5, TColor.secondaryG, isTouched: i == touchedIndex);
+            return makeGroupData(3, 7.5, TColor.secondaryG,
+                isTouched: i == touchedIndex);
           case 4:
-            return makeGroupData(4, 15, TColor.primaryG , isTouched: i == touchedIndex);
+            return makeGroupData(4, 15, TColor.primaryG,
+                isTouched: i == touchedIndex);
           case 5:
-            return makeGroupData(5, 5.5, TColor.secondaryG, isTouched: i == touchedIndex);
+            return makeGroupData(5, 5.5, TColor.secondaryG,
+                isTouched: i == touchedIndex);
           case 6:
-            return makeGroupData(6, 8.5, TColor.primaryG , isTouched: i == touchedIndex);
+            return makeGroupData(6, 8.5, TColor.primaryG,
+                isTouched: i == touchedIndex);
           default:
             return throw Error();
         }
       });
 
-    BarChartGroupData makeGroupData(
+  BarChartGroupData makeGroupData(
     int x,
     double y,
-    List<Color> barColor,
-     {
+    List<Color> barColor, {
     bool isTouched = false,
-    
     double width = 22,
     List<int> showTooltips = const [],
   }) {
-    
     return BarChartGroupData(
       x: x,
       barRods: [
         BarChartRodData(
           toY: isTouched ? y + 1 : y,
-          gradient: LinearGradient(colors: barColor, begin: Alignment.topCenter, end: Alignment.bottomCenter ),
+          gradient: LinearGradient(
+              colors: barColor,
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter),
           width: width,
           borderSide: isTouched
               ? const BorderSide(color: Colors.green)
@@ -395,4 +449,202 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
     );
   }
 
+  buildCalendarDialogButton() {
+    const dayTextStyle =
+        TextStyle(color: Colors.black, fontWeight: FontWeight.w700);
+    final weekendTextStyle =
+        TextStyle(color: Colors.grey[500], fontWeight: FontWeight.w600);
+    final anniversaryTextStyle = TextStyle(
+      color: Colors.red[400],
+      fontWeight: FontWeight.w700,
+      decoration: TextDecoration.underline,
+    );
+    final config = CalendarDatePicker2WithActionButtonsConfig(
+      dayTextStyle: dayTextStyle,
+      calendarType: CalendarDatePicker2Type.range,
+      selectedDayHighlightColor: Colors.purple[800],
+      closeDialogOnCancelTapped: true,
+      firstDayOfWeek: 1,
+      weekdayLabelTextStyle: const TextStyle(
+        color: Colors.black87,
+        fontWeight: FontWeight.bold,
+      ),
+      controlsTextStyle: const TextStyle(
+        color: Colors.black,
+        fontSize: 15,
+        fontWeight: FontWeight.bold,
+      ),
+      centerAlignModePicker: true,
+      customModePickerIcon: const SizedBox(),
+      selectedDayTextStyle: dayTextStyle.copyWith(color: Colors.white),
+      dayTextStylePredicate: ({required date}) {
+        TextStyle? textStyle;
+        if (date.weekday == DateTime.saturday ||
+            date.weekday == DateTime.sunday) {
+          textStyle = weekendTextStyle;
+        }
+        if (DateUtils.isSameDay(date, DateTime(2021, 1, 25))) {
+          textStyle = anniversaryTextStyle;
+        }
+        return textStyle;
+      },
+      dayBuilder: ({
+        required date,
+        textStyle,
+        decoration,
+        isSelected,
+        isDisabled,
+        isToday,
+      }) {
+        Widget? dayWidget;
+        if (date.day % 3 == 0 && date.day % 9 != 0) {
+          dayWidget = Container(
+            decoration: decoration,
+            child: Center(
+              child: Stack(
+                alignment: AlignmentDirectional.center,
+                children: [
+                  Text(
+                    MaterialLocalizations.of(context).formatDecimal(date.day),
+                    style: textStyle,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 27.5),
+                    child: Container(
+                      height: 4,
+                      width: 4,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        color: isSelected == true
+                            ? Colors.white
+                            : Colors.grey[500],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+        return dayWidget;
+      },
+      yearBuilder: ({
+        required year,
+        decoration,
+        isCurrentYear,
+        isDisabled,
+        isSelected,
+        textStyle,
+      }) {
+        return Center(
+          child: Container(
+            decoration: decoration,
+            height: 36,
+            width: 72,
+            child: Center(
+              child: Semantics(
+                selected: isSelected,
+                button: true,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      year.toString(),
+                      style: textStyle,
+                    ),
+                    if (isCurrentYear == true)
+                      Container(
+                        padding: const EdgeInsets.all(5),
+                        margin: const EdgeInsets.only(left: 5),
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.redAccent,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+    String _getValueText(
+      CalendarDatePicker2Type datePickerType,
+      List<DateTime?> values,
+    ) {
+      values =
+          values.map((e) => e != null ? DateUtils.dateOnly(e) : null).toList();
+      valueText = (values.isNotEmpty ? values[0] : null)
+          .toString()
+          .replaceAll('00:00:00.000', '');
+
+      if (datePickerType == CalendarDatePicker2Type.multi) {
+        valueText = values.isNotEmpty
+            ? values
+                .map((v) => v.toString().replaceAll('00:00:00.000', ''))
+                .join(', ')
+            : 'null';
+      } else if (datePickerType == CalendarDatePicker2Type.range) {
+        if (values.isNotEmpty) {
+          startDate = values[0].toString().replaceAll('00:00:00.000', '');
+          endDate = values.length > 1
+              ? values[1].toString().replaceAll('00:00:00.000', '')
+              : 'null';
+          valueText = '$startDate to $endDate';
+        } else {
+          return 'null';
+        }
+      }
+
+      return valueText;
+    }
+
+    return SizedBox(
+      width: 50,
+      height: 50,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: TColor.primaryG,
+          ),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: MaterialButton(
+            onPressed: () async {
+              final values = await showCalendarDatePicker2Dialog(
+                context: context,
+                config: config,
+                dialogSize: const Size(325, 400),
+                borderRadius: BorderRadius.circular(30),
+                value: _dialogCalendarPickerValue,
+                dialogBackgroundColor: Colors.white,
+              );
+              if (values != null) {
+                print(_getValueText(
+                  config.calendarType,
+                  values,
+                ));
+                print('fecha1:::: $startDate, fecha2::::: $endDate');
+                setState(() {
+                  _dialogCalendarPickerValue = values;
+                });
+              }
+            },
+            padding: EdgeInsets.zero,
+            height: 30,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+            textColor: TColor.primaryColor1,
+            minWidth: double.maxFinite,
+            elevation: 0,
+            color: Colors.transparent,
+            child: const Icon(
+              Icons.calendar_month,
+              color: Colors.white,
+              size: 30,
+            )),
+      ),
+    );
+  }
 }
