@@ -12,19 +12,21 @@ import '../../common_widget/latest_activity_row.dart';
 import '../../common_widget/today_target_cell.dart';
 
 class ActivityTrackerView extends StatefulWidget {
-  const ActivityTrackerView({super.key, required this.idAccount});
+  const ActivityTrackerView({super.key, required this.idAccount, required this.accountName});
 
   final String idAccount;
+  final String accountName;
 
   @override
   State<ActivityTrackerView> createState() =>
-      _ActivityTrackerViewState(idAccount);
+      _ActivityTrackerViewState(idAccount, accountName);
 }
 
 class _ActivityTrackerViewState extends State<ActivityTrackerView> {
   //CONSTRUCTOR DE CLASE PARA HACER USO DE LAS VARIABLES COMPARTIDAS
-  _ActivityTrackerViewState(this.idAccount);
+  _ActivityTrackerViewState(this.idAccount, this.accountName);
   final String idAccount;
+  final String accountName;
 
   int touchedIndex = -1;
 
@@ -58,12 +60,17 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
   List<String> paymentDateAccountA = [];
   List<String> arrayNameUsersAccountA = [];
   List<String> arrayPaymentAmountA = [];
-  double totalPaymentA = 0.0;
   bool showDataPaymentA = false;
   List<double> arrayTotalPay = [];
+  double totalPagado = 0.0;
+  double ganancia = 0.0;
+  double liquidado = 0.0;
+  double envio = 0.0;
+  double retiro = 0.0;
+
   //OBTENER PAGOS DE CUENTA-------------------------------
-  Future<void> obtenerPagosCuenta(String date1, String date2) async {
-    var response = await getPaymentsProfilesByAccountDate('1', date1, date2);
+  Future<void> obtenerPagosCuenta(String idAccount, String date1, String date2) async {
+    var response = await getPaymentsProfilesByAccountDate(idAccount, date1, date2);
     if (response != "err_internet_conex") {
       print('Respuesta pagos cuenta :::: $response');
       setState(() {
@@ -73,7 +80,7 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
           paymentDateAccountA.clear();
           arrayNameUsersAccountA.clear();
           arrayPaymentAmountA.clear();
-          totalPaymentA = 0.0;
+          totalPagado = 0.0;
           // arrayTotalPay.clear();
 
           if (paymentDateAccountA.isEmpty &&
@@ -84,10 +91,13 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
               arrayNameUsersAccountA.add(response[i]['nameUser'].toString());
               arrayPaymentAmountA.add(response[i]['amountPay'].toString());
               double? amountPayA = double.tryParse(response[i]['amountPay']);
-              totalPaymentA += amountPayA ?? 0.0;
+              totalPagado += amountPayA ?? 0.0;
+              ganancia = totalPagado - 299;
+              liquidado = ganancia - retiro;
+              envio = totalPagado - ganancia;
             }
-            arrayTotalPay.add(totalPaymentA);
-            print("total pago a::::: $totalPaymentA ");
+            arrayTotalPay.add(totalPagado);
+            print("total pago a::::: $totalPagado ");
           }
         }
       });
@@ -100,7 +110,7 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
   @override
   void initState() {
     super.initState();
-    obtenerPagosCuenta(date1, date2);
+    obtenerPagosCuenta(idAccount, date1, date2);
   }
 
   @override
@@ -192,7 +202,7 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "idAccount: $idAccount",
+                          "Cuenta: $accountName",
                           style: TextStyle(
                               color: TColor.black,
                               fontSize: 14,
@@ -203,13 +213,13 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
                     const SizedBox(
                       height: 15,
                     ),
-                    const Row(
+                    Row(
                       children: [
                         Expanded(
                           child: TodayTargetCell(
-                            icon: "assets/img/water.png",
-                            value: "8L",
-                            title: "Water Intake",
+                            icon: "assets/icons/dinero.png",
+                            value: totalPagado.toString(),
+                            title: "Total Pagado",
                           ),
                         ),
                         SizedBox(
@@ -217,9 +227,33 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
                         ),
                         Expanded(
                           child: TodayTargetCell(
-                            icon: "assets/img/foot.png",
-                            value: "2400",
-                            title: "Foot Steps",
+                            icon: "assets/icons/money.png",
+                            value: ganancia.toString(),
+                            title: "Ganancia",
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TodayTargetCell(
+                            icon: "assets/icons/fondos.png",
+                            value: liquidado.toString(),
+                            title: "Liquidado",
+                          ),
+                        ),
+                        SizedBox(
+                          width: 15,
+                        ),
+                        Expanded(
+                          child: TodayTargetCell(
+                            icon: "assets/icons/bank.png",
+                            value: envio.toString(),
+                            title: "Envio a banco",
                           ),
                         ),
                       ],
@@ -330,7 +364,7 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
             onPressed: () {
               print('fechas seleccionadas:::: $startDate y $endDate');
               print('obteniendo pagos...');
-              obtenerPagosCuenta(startDate, endDate);
+              obtenerPagosCuenta(idAccount, startDate, endDate);
             },
             padding: EdgeInsets.zero,
             height: 30,

@@ -48,14 +48,14 @@ class TodayTargetCell extends StatelessWidget {
                   style: TextStyle(
                       color: TColor.white.withOpacity(0.7),
                       fontWeight: FontWeight.w700,
-                      fontSize: 14),
+                      fontSize: 18),
                 ),
               ),
               Text(
                 title,
                 style: TextStyle(
                   color: TColor.black,
-                  fontSize: 12,
+                  fontSize: 16,
                 ),
               ),
             ],
