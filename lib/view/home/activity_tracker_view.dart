@@ -6,13 +6,19 @@ import '../../common_widget/latest_activity_row.dart';
 import '../../common_widget/today_target_cell.dart';
 
 class ActivityTrackerView extends StatefulWidget {
-  const ActivityTrackerView({super.key});
+  const ActivityTrackerView({super.key, required this.idAccount});
+
+  final String idAccount;
 
   @override
-  State<ActivityTrackerView> createState() => _ActivityTrackerViewState();
+  State<ActivityTrackerView> createState() => _ActivityTrackerViewState(idAccount);
 }
 
 class _ActivityTrackerViewState extends State<ActivityTrackerView> {
+  //CONSTRUCTOR DE CLASE PARA HACER USO DE LAS VARIABLES COMPARTIDAS
+  _ActivityTrackerViewState(this.idAccount);
+  final String idAccount;
+
     int touchedIndex = -1;
 
   List latestArr = [
@@ -104,7 +110,7 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "Today Target",
+                          "idAccount: $idAccount",
                           style: TextStyle(
                               color: TColor.black,
                               fontSize: 14,
