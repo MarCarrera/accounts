@@ -1,4 +1,5 @@
 import 'package:fitness/common_widget/setting_row.dart';
+import 'package:fitness/common_widget/today_target_two_cell.dart';
 import 'package:fitness/common_widget/workout_row.dart';
 import 'package:fitness/request/api_request.dart';
 import 'package:fitness/view/home/finished_workout_view.dart';
@@ -64,8 +65,9 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
   List<double> arrayTotalPay = [];
   double totalPagado = 0.0;
   double ganancia = 0.0;
-  double liquidado = 0.0;
+  double liquidar = 0.0;
   double envio = 0.0;
+  double enviado = 0.0;
   double retiro = 0.0;
 
   //OBTENER PAGOS DE CUENTA-------------------------------
@@ -93,8 +95,10 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
               double? amountPayA = double.tryParse(response[i]['amountPay']);
               totalPagado += amountPayA ?? 0.0;
               ganancia = totalPagado - 299;
-              liquidado = ganancia - retiro;
-              envio = totalPagado - ganancia;
+              liquidar = ganancia - retiro;
+              if(totalPagado > 299){
+                envio = totalPagado - ganancia - enviado;
+              }
             }
             arrayTotalPay.add(totalPagado);
             print("total pago a::::: $totalPagado ");
@@ -205,7 +209,7 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
                           "Cuenta: $accountName",
                           style: TextStyle(
                               color: TColor.black,
-                              fontSize: 14,
+                              fontSize: 18,
                               fontWeight: FontWeight.w700),
                         ),
                       ],
@@ -240,20 +244,24 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
                     Row(
                       children: [
                         Expanded(
-                          child: TodayTargetCell(
+                          child: TodayTargetTwoCell(
                             icon: "assets/icons/fondos.png",
-                            value: liquidado.toString(),
-                            title: "Liquidado",
+                            value1: liquidar.toString(),
+                            title1: "Pendiente",
+                            value2: retiro.toString(),
+                            title2: "Liquidado",
                           ),
                         ),
                         SizedBox(
                           width: 15,
                         ),
                         Expanded(
-                          child: TodayTargetCell(
+                          child: TodayTargetTwoCell(
                             icon: "assets/icons/bank.png",
-                            value: envio.toString(),
-                            title: "Envio a banco",
+                            value1: envio.toString(),
+                            title1: "Pendiente",
+                            value2: enviado.toString(),
+                            title2: "Enviado",
                           ),
                         ),
                       ],
