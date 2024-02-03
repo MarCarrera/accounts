@@ -43,7 +43,7 @@ class TodayTargetCell extends StatelessWidget {
                       .createShader(
                           Rect.fromLTRB(0, 0, bounds.width, bounds.height));
                 },
-                child: Text('\$$value',
+                child: Text('$value',
                   style: TextStyle(
                       color: TColor.white.withOpacity(0.7),
                       fontWeight: FontWeight.w700,

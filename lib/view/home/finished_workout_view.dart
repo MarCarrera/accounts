@@ -1,6 +1,7 @@
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:fitness/common_widget/setting_row.dart';
 import 'package:fitness/common_widget/today_target_cell.dart';
+import 'package:fitness/common_widget/today_target_tree_cell.dart';
 import 'package:fitness/common_widget/today_target_two_cell.dart';
 import 'package:fitness/request/api_request.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +33,7 @@ final String userName;
     DateTime(DateTime.now().year, DateTime.now().month, 1),
     DateTime.now(),
   ];
+  double totalPagado = 0.0;
 
   String date1 = DateFormat('yyyy-MM-dd')
       .format(DateTime(DateTime.now().year, DateTime.now().month, 1));
@@ -74,6 +76,8 @@ final String userName;
               paymentDateUserA.add(response[i]['paymentDate'].toString());
               arrayPaymentStatusA.add(response[i]['paymentStatus'].toString());
               arrayPaymentAmountA.add(response[i]['amountPay'].toString());
+              double? amountPayA = double.tryParse(response[i]['amountPay']);
+              totalPagado += amountPayA ?? 0.0;
             }
           }
         }
@@ -94,7 +98,7 @@ final String userName;
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
+          padding: const EdgeInsets.symmetric(horizontal: 0),
           child: SingleChildScrollView(
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 25),
@@ -129,7 +133,7 @@ final String userName;
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "Cuenta: $userName",
+                              "Usuario: $userName",
                               style: TextStyle(
                                   color: TColor.black,
                                   fontSize: 18,
@@ -143,52 +147,27 @@ final String userName;
                         Row(
                           children: [
                             Expanded(
-                              child: TodayTargetCell(
-                                icon: "assets/icons/dinero.png",
-                                value: '',
-                                title: "Total Pagado",
-                              ),
-                            ),
-                            SizedBox(
-                              width: 15,
-                            ),
-                            Expanded(
-                              child: TodayTargetCell(
-                                icon: "assets/icons/money.png",
-                                value:
-                                    '',
-                                title: "Ganancia",
-                              ),
-                            ),
+                          child: TodayTargetCell(
+                            icon: "assets/icons/dinero.png",
+                            value: totalPagado.toString(),
+                            title: "Total Pagado",
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 15,
+                        ),
+                        
+                        Expanded(
+                          child: TodayTargetCell(
+                            icon: "assets/icons/pago2.png",
+                            value: '5 días',
+                            title: "Próximo pago",
+                          ),
+                        ),
                           ],
                         ),
                         const SizedBox(
                           height: 15,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TodayTargetTwoCell(
-                                icon: "assets/icons/fondos.png",
-                                value1: '',
-                                title1: "Pendiente",
-                                value2: '',
-                                title2: "Liquidado",
-                              ),
-                            ),
-                            SizedBox(
-                              width: 15,
-                            ),
-                            Expanded(
-                              child: TodayTargetTwoCell(
-                                icon: "assets/icons/bank.png",
-                                value1: '',
-                                title1: "Pendiente",
-                                value2: '',
-                                title2: "Enviado",
-                              ),
-                            ),
-                          ],
                         ),
                         //LISTA DE PAGOS-------------------------------
                         ListView.builder(
