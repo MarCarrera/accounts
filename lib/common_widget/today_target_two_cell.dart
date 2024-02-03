@@ -49,14 +49,14 @@ class TodayTargetTwoCell extends StatelessWidget {
                               .createShader(
                                   Rect.fromLTRB(0, 0, bounds.width, bounds.height));
                         },
-                        child: Text(
-                          value1,
+                        child: Text('\$$value1',
                           style: TextStyle(
                               color: TColor.white.withOpacity(0.7),
                               fontWeight: FontWeight.w700,
                               fontSize: 18),
                         ),
                       ),
+                      
                       Text(
                         title1,
                         style: TextStyle(
@@ -81,8 +81,7 @@ class TodayTargetTwoCell extends StatelessWidget {
                               .createShader(
                                   Rect.fromLTRB(0, 0, bounds.width, bounds.height));
                         },
-                        child: Text(
-                          value2,
+                        child: Text('\$$value2',
                           style: TextStyle(
                               color: TColor.white.withOpacity(0.7),
                               fontWeight: FontWeight.w700,

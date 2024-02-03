@@ -57,7 +57,7 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
       .format(DateTime(DateTime.now().year, DateTime.now().month, 1));
 
   String date2 = DateFormat('yyyy-MM-dd').format(DateTime.now());
-  //pagos de usuarios cuenta A-----------------------------------
+  //pagos de usuarios cuenta -----------------------------------
   List<String> paymentDateAccountA = [];
   List<String> arrayNameUsersAccountA = [];
   List<String> arrayPaymentAmountA = [];
@@ -69,6 +69,17 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
   double envio = 0.0;
   double enviado = 0.0;
   double retiro = 0.0;
+  //Perfiles de usuarios
+  List<String> arrayidUserA = [];
+  List<String> arrayprofileA = [];
+  List<String> arraynameA = [];
+  List<String> arraypaymentA = [];
+  List<String> arrayamountA = [];
+  List<String> arrayphoneA = [];
+  List<String> arraypinA = [];
+  List<String> arraystatusA = [];
+  List<String> arrayGenresA = [];
+  bool dataAccountAclear = false;
 
   //OBTENER PAGOS DE CUENTA-------------------------------
   Future<void> obtenerPagosCuenta(String idAccount, String date1, String date2) async {
@@ -109,12 +120,40 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
       print('Sin conexion');
     }
   }
-
+  //OBTENER USUARIOS DE LA CUENTA ------------------------
+Future<void> obtenerPerfilesCuenta(String idAccount) async {
+    var response = await getProfilesByAccount(idAccount);
+    if (response != "err_internet_conex") {
+      print('Respuesta perfiles:::: $response');
+      setState(() {
+        //isLoading = false;
+        if (response == 'empty') {
+        } else {
+          for (int i = 0; i < response.length; i++) {
+            String idAccountUser = response[i]['idAccountUser'].toString();
+            arrayidUserA.add(response[i]['idUser'].toString());
+            arrayprofileA.add(response[i]['profileUser'].toString());
+            arraynameA.add(response[i]['nameUser'].toString());
+            arraypaymentA.add(response[i]['paymentDateUser'].toString());
+            arrayamountA.add(response[i]['amount'].toString());
+            arrayphoneA.add(response[i]['phoneUser'].toString());
+            arraypinA.add(response[i]['pinUser'].toString());
+            arraystatusA.add(response[i]['statusUser'].toString());
+            arrayGenresA.add(response[i]['genre'].toString());
+          }
+        }
+        //  }
+      });
+    } else {
+      print('Sin conexion');
+    }
+  }
   //------------------------------------------------------
   @override
   void initState() {
     super.initState();
     obtenerPagosCuenta(idAccount, date1, date2);
+    obtenerPerfilesCuenta(idAccount);
   }
 
   @override
@@ -232,7 +271,7 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
                         Expanded(
                           child: TodayTargetCell(
                             icon: "assets/icons/money.png",
-                            value: ganancia.toString(),
+                            value: ganancia < 0 ? '00.0' : ganancia.toString(),
                             title: "Ganancia",
                           ),
                         ),
@@ -258,7 +297,7 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
                         Expanded(
                           child: TodayTargetTwoCell(
                             icon: "assets/icons/bank.png",
-                            value1: envio.toString(),
+                            value1: envio < 0 ? '00.0' : envio.toString(),
                             title1: "Pendiente",
                             value2: enviado.toString(),
                             title2: "Enviado",
@@ -279,7 +318,8 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
                           },
                           paymentDate: paymentDateAccountA[index],
                           nameUser: arrayNameUsersAccountA[index],
-                          paymentAmount: arrayPaymentAmountA[index],
+                          paymentAmount: arrayPaymentAmountA[index], 
+                          profileUser: arrayprofileA[index],
                         );
                       },
                     )
@@ -305,18 +345,29 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
                   padding: EdgeInsets.zero,
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
-                  itemCount: 5,
+                  itemCount: arrayidUserA.length,
                   itemBuilder: (context, index) {
                     return InkWell(
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const FinishedWorkoutView(),
+                              builder: (context) => FinishedWorkoutView(
+                                userName: arraynameA[index], 
+                                idUser: arrayidUserA[index],),
                             ),
                           );
                         },
-                        child: WorkoutRow());
+                        child: WorkoutRow(
+                          idUser: arrayidUserA[index], 
+                          profileUser: arrayprofileA[index],  
+                          nameUser: arraynameA[index],  
+                          paymentUser: arraypaymentA[index],  
+                          amountUser: arrayamountA[index],  
+                          phoneUser: arrayphoneA[index],  
+                          pinUser: arraypinA[index],  
+                          statusUser: arraystatusA[index],  
+                          genreUser: arrayGenresA[index]));
                   }),
               SizedBox(
                 height: media.width * 0.1,

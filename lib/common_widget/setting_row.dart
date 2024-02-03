@@ -6,8 +6,9 @@ class SettingRow extends StatefulWidget {
   final String paymentDate;
   final String nameUser;
   final String paymentAmount;
+  final String profileUser;
   final VoidCallback onPressed;
-  const SettingRow({super.key, required this.onPressed, required this.paymentDate, required this.nameUser, required this.paymentAmount });
+  const SettingRow({super.key, required this.onPressed, required this.paymentDate, required this.nameUser, required this.paymentAmount, required this.profileUser });
 
   @override
   State<SettingRow> createState() => _SettingRowState();
@@ -37,7 +38,7 @@ class _SettingRowState extends State<SettingRow> {
             ),
             Expanded(
               child: Text(
-                widget.nameUser,
+                widget.nameUser == 'null' ? widget.profileUser : widget.nameUser,
                 style: TextStyle(
                   color: TColor.black,
                   fontSize: 19,
