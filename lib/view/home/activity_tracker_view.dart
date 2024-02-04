@@ -1,19 +1,35 @@
+import 'package:fitness/common_widget/setting_row.dart';
+import 'package:fitness/common_widget/today_target_two_cell.dart';
+import 'package:fitness/common_widget/workout_row.dart';
+import 'package:fitness/request/api_request.dart';
+import 'package:fitness/view/home/finished_workout_view.dart';
+import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../common/colo_extension.dart';
 import '../../common_widget/latest_activity_row.dart';
 import '../../common_widget/today_target_cell.dart';
 
 class ActivityTrackerView extends StatefulWidget {
-  const ActivityTrackerView({super.key});
+  const ActivityTrackerView({super.key, required this.idAccount, required this.accountName});
+
+  final String idAccount;
+  final String accountName;
 
   @override
-  State<ActivityTrackerView> createState() => _ActivityTrackerViewState();
+  State<ActivityTrackerView> createState() =>
+      _ActivityTrackerViewState(idAccount, accountName);
 }
 
 class _ActivityTrackerViewState extends State<ActivityTrackerView> {
-    int touchedIndex = -1;
+  //CONSTRUCTOR DE CLASE PARA HACER USO DE LAS VARIABLES COMPARTIDAS
+  _ActivityTrackerViewState(this.idAccount, this.accountName);
+  final String idAccount;
+  final String accountName;
+
+  int touchedIndex = -1;
 
   List latestArr = [
     {
@@ -27,6 +43,118 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
       "time": "About 3 hours ago"
     },
   ];
+
+  DateTime d = DateTime.now();
+  String valueText = '';
+  String startDate = '';
+  String endDate = '';
+  List<DateTime?> _dialogCalendarPickerValue = [
+    DateTime(DateTime.now().year, DateTime.now().month, 1),
+    DateTime.now(),
+  ];
+
+  String date1 = DateFormat('yyyy-MM-dd')
+      .format(DateTime(DateTime.now().year, DateTime.now().month, 1));
+
+  String date2 = DateFormat('yyyy-MM-dd').format(DateTime.now());
+  //pagos de usuarios cuenta -----------------------------------
+  List<String> paymentDateAccountA = [];
+  List<String> arrayNameUsersAccountA = [];
+  List<String> arrayPaymentAmountA = [];
+  bool showDataPaymentA = false;
+  List<double> arrayTotalPay = [];
+  double totalPagado = 0.0;
+  double ganancia = 0.0;
+  double liquidar = 0.0;
+  double envio = 0.0;
+  double enviado = 0.0;
+  double retiro = 0.0;
+  //Perfiles de usuarios
+  List<String> arrayidUserA = [];
+  List<String> arrayprofileA = [];
+  List<String> arraynameA = [];
+  List<String> arraypaymentA = [];
+  List<String> arrayamountA = [];
+  List<String> arrayphoneA = [];
+  List<String> arraypinA = [];
+  List<String> arraystatusA = [];
+  List<String> arrayGenresA = [];
+  bool dataAccountAclear = false;
+
+  //OBTENER PAGOS DE CUENTA-------------------------------
+  Future<void> obtenerPagosCuenta(String idAccount, String date1, String date2) async {
+    var response = await getPaymentsProfilesByAccountDate(idAccount, date1, date2);
+    if (response != "err_internet_conex") {
+      print('Respuesta pagos cuenta :::: $response');
+      setState(() {
+        //isLoading = false;
+        if (response == 'empty') {
+        } else {
+          paymentDateAccountA.clear();
+          arrayNameUsersAccountA.clear();
+          arrayPaymentAmountA.clear();
+          totalPagado = 0.0;
+          // arrayTotalPay.clear();
+
+          if (paymentDateAccountA.isEmpty &&
+              arrayNameUsersAccountA.isEmpty &&
+              arrayPaymentAmountA.isEmpty) {
+            for (int i = 0; i < response.length; i++) {
+              paymentDateAccountA.add(response[i]['paymentDate'].toString());
+              arrayNameUsersAccountA.add(response[i]['nameUser'].toString());
+              arrayPaymentAmountA.add(response[i]['amountPay'].toString());
+              double? amountPayA = double.tryParse(response[i]['amountPay']);
+              totalPagado += amountPayA ?? 0.0;
+              ganancia = totalPagado - 299;
+              liquidar = ganancia - retiro;
+              if(totalPagado > 299){
+                envio = totalPagado - ganancia - enviado;
+              }
+            }
+            arrayTotalPay.add(totalPagado);
+            print("total pago a::::: $totalPagado ");
+          }
+        }
+      });
+    } else {
+      print('Sin conexion');
+    }
+  }
+  //OBTENER USUARIOS DE LA CUENTA ------------------------
+Future<void> obtenerPerfilesCuenta(String idAccount) async {
+    var response = await getProfilesByAccount(idAccount);
+    if (response != "err_internet_conex") {
+      print('Respuesta perfiles:::: $response');
+      setState(() {
+        //isLoading = false;
+        if (response == 'empty') {
+        } else {
+          for (int i = 0; i < response.length; i++) {
+            String idAccountUser = response[i]['idAccountUser'].toString();
+            arrayidUserA.add(response[i]['idUser'].toString());
+            arrayprofileA.add(response[i]['profileUser'].toString());
+            arraynameA.add(response[i]['nameUser'].toString());
+            arraypaymentA.add(response[i]['paymentDateUser'].toString());
+            arrayamountA.add(response[i]['amount'].toString());
+            arrayphoneA.add(response[i]['phoneUser'].toString());
+            arraypinA.add(response[i]['pinUser'].toString());
+            arraystatusA.add(response[i]['statusUser'].toString());
+            arrayGenresA.add(response[i]['genre'].toString());
+          }
+        }
+        //  }
+      });
+    } else {
+      print('Sin conexion');
+    }
+  }
+  //------------------------------------------------------
+  @override
+  void initState() {
+    super.initState();
+    obtenerPagosCuenta(idAccount, date1, date2);
+    obtenerPerfilesCuenta(idAccount);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +185,7 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
           ),
         ),
         title: Text(
-          "Activity Tracker",
+          "Control de Pagos",
           style: TextStyle(
               color: TColor.black, fontSize: 16, fontWeight: FontWeight.w700),
         ),
@@ -88,6 +216,19 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
           padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 25),
           child: Column(
             children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  buildCalendarDialogButton(),
+                  DateButton(),
+                  SearchButton(),
+                ],
+              ),
+              SizedBox(
+                height: 14,
+              ),
+              //CONTENEDOR DE TARJETA O CARD DE PAGOS
               Container(
                 padding:
                     const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
@@ -104,51 +245,24 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "Today Target",
+                          "Cuenta: $accountName",
                           style: TextStyle(
                               color: TColor.black,
-                              fontSize: 14,
+                              fontSize: 18,
                               fontWeight: FontWeight.w700),
                         ),
-                        SizedBox(
-                          width: 30,
-                          height: 30,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: TColor.primaryG,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: MaterialButton(
-                                onPressed: () {},
-                                padding: EdgeInsets.zero,
-                                height: 30,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(25)),
-                                textColor: TColor.primaryColor1,
-                                minWidth: double.maxFinite,
-                                elevation: 0,
-                                color: Colors.transparent,
-                                child: const Icon(
-                                  Icons.add,
-                                  color: Colors.white,
-                                  size: 15,
-                                )),
-                          ),
-                        )
                       ],
                     ),
                     const SizedBox(
                       height: 15,
                     ),
-                    const Row(
+                    Row(
                       children: [
                         Expanded(
                           child: TodayTargetCell(
-                            icon: "assets/img/water.png",
-                            value: "8L",
-                            title: "Water Intake",
+                            icon: "assets/icons/dinero.png",
+                            value: totalPagado.toString(),
+                            title: "Total Pagado",
                           ),
                         ),
                         SizedBox(
@@ -156,205 +270,104 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
                         ),
                         Expanded(
                           child: TodayTargetCell(
-                            icon: "assets/img/foot.png",
-                            value: "2400",
-                            title: "Foot Steps",
+                            icon: "assets/icons/money.png",
+                            value: ganancia < 0 ? '00.0' : ganancia.toString(),
+                            title: "Ganancia",
                           ),
                         ),
                       ],
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TodayTargetTwoCell(
+                            icon: "assets/icons/fondos.png",
+                            value1: liquidar.toString(),
+                            title1: "Pendiente",
+                            value2: retiro.toString(),
+                            title2: "Liquidado",
+                          ),
+                        ),
+                        SizedBox(
+                          width: 15,
+                        ),
+                        Expanded(
+                          child: TodayTargetTwoCell(
+                            icon: "assets/icons/bank.png",
+                            value1: envio < 0 ? '00.0' : envio.toString(),
+                            title1: "Pendiente",
+                            value2: enviado.toString(),
+                            title2: "Enviado",
+                          ),
+                        ),
+                      ],
+                    ),
+                    //LISTA DE PAGOS-------------------------------
+                    ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: paymentDateAccountA.length,
+                      itemBuilder: (context, index) {
+                        return SettingRow(
+                          onPressed: () {
+                            print(
+                                'seleccionado:::: ${paymentDateAccountA[index]}');
+                          },
+                          paymentDate: paymentDateAccountA[index],
+                          nameUser: arrayNameUsersAccountA[index],
+                          paymentAmount: arrayPaymentAmountA[index], 
+                          profileUser: arrayprofileA[index],
+                        );
+                      },
                     )
                   ],
                 ),
               ),
               SizedBox(
-                height: media.width * 0.1,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Activity  Progress",
-                    style: TextStyle(
-                        color: TColor.black,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700),
-                  ),
-                  Container(
-                      height: 30,
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(colors: TColor.primaryG),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton(
-                          items: ["Weekly", "Monthly"]
-                              .map((name) => DropdownMenuItem(
-                                    value: name,
-                                    child: Text(
-                                      name,
-                                      style: TextStyle(
-                                          color: TColor.gray, fontSize: 14),
-                                    ),
-                                  ))
-                              .toList(),
-                          onChanged: (value) {},
-                          icon: Icon(Icons.expand_more, color: TColor.white),
-                          hint: Text(
-                            "Weekly",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: TColor.white, fontSize: 12),
-                          ),
-                        ),
-                      )),
-                ],
-              ),
-
-              SizedBox(
-                height: media.width * 0.05,
-              ),
-
-              Container(
-                height: media.width * 0.5,
-                padding: const EdgeInsets.symmetric(vertical: 15 , horizontal: 0),
-                decoration: BoxDecoration(
-                    color: TColor.white,
-                    borderRadius: BorderRadius.circular(15),
-                    boxShadow: const [
-                      BoxShadow(color: Colors.black12, blurRadius: 3)
-                    ]),
-                    child: BarChart(
-                      
-                      BarChartData(
-                  barTouchData: BarTouchData(
-                    touchTooltipData: BarTouchTooltipData(
-                      tooltipBgColor: Colors.grey,
-                      tooltipHorizontalAlignment: FLHorizontalAlignment.right,
-                      tooltipMargin: 10,
-                      getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                        String weekDay;
-                        switch (group.x) {
-                          case 0:
-                            weekDay = 'Monday';
-                            break;
-                          case 1:
-                            weekDay = 'Tuesday';
-                            break;
-                          case 2:
-                            weekDay = 'Wednesday';
-                            break;
-                          case 3:
-                            weekDay = 'Thursday';
-                            break;
-                          case 4:
-                            weekDay = 'Friday';
-                            break;
-                          case 5:
-                            weekDay = 'Saturday';
-                            break;
-                          case 6:
-                            weekDay = 'Sunday';
-                            break;
-                          default:
-                            throw Error();
-                        }
-                        return BarTooltipItem(
-                          '$weekDay\n',
-                          const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                          children: <TextSpan>[
-                            TextSpan(
-                              text: (rod.toY - 1).toString(),
-                              style: TextStyle(
-                                color: TColor.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                    touchCallback: (FlTouchEvent event, barTouchResponse) {
-                      setState(() {
-                        if (!event.isInterestedForInteractions ||
-                            barTouchResponse == null ||
-                            barTouchResponse.spot == null) {
-                          touchedIndex = -1;
-                          return;
-                        }
-                        touchedIndex =
-                            barTouchResponse.spot!.touchedBarGroupIndex;
-                      });
-                    },
-                  ),
-                  titlesData: FlTitlesData(
-                    show: true,
-                    rightTitles:  AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    topTitles:  AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: getTitles,
-                        reservedSize: 38,
-                      ),
-                    ),
-                    leftTitles:  AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: false,
-                      ),
-                    ),
-                  ),
-                  borderData: FlBorderData(
-                    show: false,
-                  ),
-                  barGroups: showingGroups(),
-                  gridData:  FlGridData(show: false),
-                )
-                    
-                  ),
-              ),
-              
-              SizedBox(
                 height: media.width * 0.05,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Latest Workout",
+                    "Usuarios de la cuenta",
                     style: TextStyle(
                         color: TColor.black,
                         fontSize: 16,
                         fontWeight: FontWeight.w700),
                   ),
-                  TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      "See More",
-                      style: TextStyle(
-                          color: TColor.gray,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700),
-                    ),
-                  )
                 ],
               ),
               ListView.builder(
                   padding: EdgeInsets.zero,
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
-                  itemCount: latestArr.length,
+                  itemCount: arrayidUserA.length,
                   itemBuilder: (context, index) {
-                    var wObj = latestArr[index] as Map? ?? {};
-                    return LatestActivityRow(wObj: wObj);
+                    return InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FinishedWorkoutView(
+                                userName: arraynameA[index], 
+                                idUser: arrayidUserA[index],),
+                            ),
+                          );
+                        },
+                        child: WorkoutRow(
+                          idUser: arrayidUserA[index], 
+                          profileUser: arrayprofileA[index],  
+                          nameUser: arraynameA[index],  
+                          paymentUser: arraypaymentA[index],  
+                          amountUser: arrayamountA[index],  
+                          phoneUser: arrayphoneA[index],  
+                          pinUser: arraypinA[index],  
+                          statusUser: arraystatusA[index],  
+                          genreUser: arrayGenresA[index]));
                   }),
               SizedBox(
                 height: media.width * 0.1,
@@ -362,6 +375,69 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  SizedBox DateButton() {
+    return SizedBox(
+      width: 250,
+      height: 50,
+      child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: TColor.primaryG,
+            ),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: MaterialButton(
+            onPressed: () {},
+            padding: EdgeInsets.zero,
+            height: 30,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+            textColor: Colors.white,
+            minWidth: double.maxFinite,
+            elevation: 0,
+            color: Colors.transparent,
+            child: Text(
+              startDate == '' ? '$date1 a $date2' : '$startDate a $endDate',
+              style: TextStyle(fontSize: 18),
+            ),
+          )),
+    );
+  }
+
+  SizedBox SearchButton() {
+    return SizedBox(
+      width: 50,
+      height: 50,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: TColor.primaryG,
+          ),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: MaterialButton(
+            onPressed: () {
+              print('fechas seleccionadas:::: $startDate y $endDate');
+              print('obteniendo pagos...');
+              obtenerPagosCuenta(idAccount, startDate, endDate);
+            },
+            padding: EdgeInsets.zero,
+            height: 30,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+            textColor: TColor.primaryColor1,
+            minWidth: double.maxFinite,
+            elevation: 0,
+            color: Colors.transparent,
+            child: const Icon(
+              Icons.search,
+              color: Colors.white,
+              size: 30,
+            )),
       ),
     );
   }
@@ -375,28 +451,28 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
     Widget text;
     switch (value.toInt()) {
       case 0:
-        text =  Text('Sun', style: style);
+        text = Text('Sun', style: style);
         break;
       case 1:
-        text =  Text('Mon', style: style);
+        text = Text('Mon', style: style);
         break;
       case 2:
-        text =  Text('Tue', style: style);
+        text = Text('Tue', style: style);
         break;
       case 3:
-        text =  Text('Wed', style: style);
+        text = Text('Wed', style: style);
         break;
       case 4:
-        text =  Text('Thu', style: style);
+        text = Text('Thu', style: style);
         break;
       case 5:
-        text =  Text('Fri', style: style);
+        text = Text('Fri', style: style);
         break;
       case 6:
-        text =  Text('Sat', style: style);
+        text = Text('Sat', style: style);
         break;
       default:
-        text =  Text('', style: style);
+        text = Text('', style: style);
         break;
     }
     return SideTitleWidget(
@@ -405,44 +481,52 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
       child: text,
     );
   }
-   List<BarChartGroupData> showingGroups() => List.generate(7, (i) {
+
+  List<BarChartGroupData> showingGroups() => List.generate(7, (i) {
         switch (i) {
           case 0:
-            return makeGroupData(0, 5, TColor.primaryG , isTouched: i == touchedIndex);
+            return makeGroupData(0, 5, TColor.primaryG,
+                isTouched: i == touchedIndex);
           case 1:
-            return makeGroupData(1, 10.5, TColor.secondaryG, isTouched: i == touchedIndex);
+            return makeGroupData(1, 10.5, TColor.secondaryG,
+                isTouched: i == touchedIndex);
           case 2:
-            return makeGroupData(2, 5, TColor.primaryG , isTouched: i == touchedIndex);
+            return makeGroupData(2, 5, TColor.primaryG,
+                isTouched: i == touchedIndex);
           case 3:
-            return makeGroupData(3, 7.5, TColor.secondaryG, isTouched: i == touchedIndex);
+            return makeGroupData(3, 7.5, TColor.secondaryG,
+                isTouched: i == touchedIndex);
           case 4:
-            return makeGroupData(4, 15, TColor.primaryG , isTouched: i == touchedIndex);
+            return makeGroupData(4, 15, TColor.primaryG,
+                isTouched: i == touchedIndex);
           case 5:
-            return makeGroupData(5, 5.5, TColor.secondaryG, isTouched: i == touchedIndex);
+            return makeGroupData(5, 5.5, TColor.secondaryG,
+                isTouched: i == touchedIndex);
           case 6:
-            return makeGroupData(6, 8.5, TColor.primaryG , isTouched: i == touchedIndex);
+            return makeGroupData(6, 8.5, TColor.primaryG,
+                isTouched: i == touchedIndex);
           default:
             return throw Error();
         }
       });
 
-    BarChartGroupData makeGroupData(
+  BarChartGroupData makeGroupData(
     int x,
     double y,
-    List<Color> barColor,
-     {
+    List<Color> barColor, {
     bool isTouched = false,
-    
     double width = 22,
     List<int> showTooltips = const [],
   }) {
-    
     return BarChartGroupData(
       x: x,
       barRods: [
         BarChartRodData(
           toY: isTouched ? y + 1 : y,
-          gradient: LinearGradient(colors: barColor, begin: Alignment.topCenter, end: Alignment.bottomCenter ),
+          gradient: LinearGradient(
+              colors: barColor,
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter),
           width: width,
           borderSide: isTouched
               ? const BorderSide(color: Colors.green)
@@ -458,4 +542,202 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
     );
   }
 
+  buildCalendarDialogButton() {
+    const dayTextStyle =
+        TextStyle(color: Colors.black, fontWeight: FontWeight.w700);
+    final weekendTextStyle =
+        TextStyle(color: Colors.grey[500], fontWeight: FontWeight.w600);
+    final anniversaryTextStyle = TextStyle(
+      color: Colors.red[400],
+      fontWeight: FontWeight.w700,
+      decoration: TextDecoration.underline,
+    );
+    final config = CalendarDatePicker2WithActionButtonsConfig(
+      dayTextStyle: dayTextStyle,
+      calendarType: CalendarDatePicker2Type.range,
+      selectedDayHighlightColor: Colors.purple[800],
+      closeDialogOnCancelTapped: true,
+      firstDayOfWeek: 1,
+      weekdayLabelTextStyle: const TextStyle(
+        color: Colors.black87,
+        fontWeight: FontWeight.bold,
+      ),
+      controlsTextStyle: const TextStyle(
+        color: Colors.black,
+        fontSize: 15,
+        fontWeight: FontWeight.bold,
+      ),
+      centerAlignModePicker: true,
+      customModePickerIcon: const SizedBox(),
+      selectedDayTextStyle: dayTextStyle.copyWith(color: Colors.white),
+      dayTextStylePredicate: ({required date}) {
+        TextStyle? textStyle;
+        if (date.weekday == DateTime.saturday ||
+            date.weekday == DateTime.sunday) {
+          textStyle = weekendTextStyle;
+        }
+        if (DateUtils.isSameDay(date, DateTime(2021, 1, 25))) {
+          textStyle = anniversaryTextStyle;
+        }
+        return textStyle;
+      },
+      dayBuilder: ({
+        required date,
+        textStyle,
+        decoration,
+        isSelected,
+        isDisabled,
+        isToday,
+      }) {
+        Widget? dayWidget;
+        if (date.day % 3 == 0 && date.day % 9 != 0) {
+          dayWidget = Container(
+            decoration: decoration,
+            child: Center(
+              child: Stack(
+                alignment: AlignmentDirectional.center,
+                children: [
+                  Text(
+                    MaterialLocalizations.of(context).formatDecimal(date.day),
+                    style: textStyle,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 27.5),
+                    child: Container(
+                      height: 4,
+                      width: 4,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        color: isSelected == true
+                            ? Colors.white
+                            : Colors.grey[500],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+        return dayWidget;
+      },
+      yearBuilder: ({
+        required year,
+        decoration,
+        isCurrentYear,
+        isDisabled,
+        isSelected,
+        textStyle,
+      }) {
+        return Center(
+          child: Container(
+            decoration: decoration,
+            height: 36,
+            width: 72,
+            child: Center(
+              child: Semantics(
+                selected: isSelected,
+                button: true,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      year.toString(),
+                      style: textStyle,
+                    ),
+                    if (isCurrentYear == true)
+                      Container(
+                        padding: const EdgeInsets.all(5),
+                        margin: const EdgeInsets.only(left: 5),
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.redAccent,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+    String _getValueText(
+      CalendarDatePicker2Type datePickerType,
+      List<DateTime?> values,
+    ) {
+      values =
+          values.map((e) => e != null ? DateUtils.dateOnly(e) : null).toList();
+      valueText = (values.isNotEmpty ? values[0] : null)
+          .toString()
+          .replaceAll('00:00:00.000', '');
+
+      if (datePickerType == CalendarDatePicker2Type.multi) {
+        valueText = values.isNotEmpty
+            ? values
+                .map((v) => v.toString().replaceAll('00:00:00.000', ''))
+                .join(', ')
+            : 'null';
+      } else if (datePickerType == CalendarDatePicker2Type.range) {
+        if (values.isNotEmpty) {
+          startDate = values[0].toString().replaceAll('00:00:00.000', '');
+          endDate = values.length > 1
+              ? values[1].toString().replaceAll('00:00:00.000', '')
+              : 'null';
+          valueText = '$startDate to $endDate';
+        } else {
+          return 'null';
+        }
+      }
+
+      return valueText;
+    }
+
+    return SizedBox(
+      width: 50,
+      height: 50,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: TColor.primaryG,
+          ),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: MaterialButton(
+            onPressed: () async {
+              final values = await showCalendarDatePicker2Dialog(
+                context: context,
+                config: config,
+                dialogSize: const Size(325, 400),
+                borderRadius: BorderRadius.circular(30),
+                value: _dialogCalendarPickerValue,
+                dialogBackgroundColor: Colors.white,
+              );
+              if (values != null) {
+                print(_getValueText(
+                  config.calendarType,
+                  values,
+                ));
+                print('fecha1:::: $startDate, fecha2::::: $endDate');
+                setState(() {
+                  _dialogCalendarPickerValue = values;
+                });
+              }
+            },
+            padding: EdgeInsets.zero,
+            height: 30,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+            textColor: TColor.primaryColor1,
+            minWidth: double.maxFinite,
+            elevation: 0,
+            color: Colors.transparent,
+            child: const Icon(
+              Icons.calendar_month,
+              color: Colors.white,
+              size: 30,
+            )),
+      ),
+    );
+  }
 }

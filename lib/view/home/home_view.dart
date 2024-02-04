@@ -3,6 +3,7 @@ import 'package:fitness/common_widget/round_button.dart';
 import 'package:fitness/common_widget/setting_row.dart';
 import 'package:fitness/common_widget/workout_row.dart';
 import 'package:fitness/request/api_request.dart';
+import 'package:fitness/view/utils/show_editing_account.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_animation_progress_bar/simple_animation_progress_bar.dart';
@@ -15,42 +16,37 @@ import 'notification_view.dart';
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
 
-
   @override
   State<HomeView> createState() => _HomeViewState();
 }
 
 class _HomeViewState extends State<HomeView> {
+  final TextEditingController passController = TextEditingController();
 
-   //VARIABLES QUE ALOJAN VALORES DE APIS--------------------------------
+  //VARIABLES QUE ALOJAN VALORES DE APIS--------------------------------
   List<String> arrayidAccount = [];
   List<String> arraynameAccount = [];
   List<String> arraypaymentAccount = [];
   List<String> arraypassword = [];
   List<String> arrayBanks = [];
-  List<double> arrayTotalPay = [];
-  //pagos de usuarios cuenta A-----------------------------------
-  List<String> paymentDateAccountA = [];
-  List<String> arrayNameUsersAccountA = [];
-  List<String> arrayPaymentAmountA = [];
-  double totalPaymentA = 0.0;
-  bool showDataPaymentA = false;
+  
+ 
 
   List<String> paymentDateAccountB = [];
   List<String> arrayNameUsersAccountB = [];
   List<String> arrayPaymentAmountB = [];
-  double totalPaymentB = 0.0;
+
 
   List<String> paymentDateAccountC = [];
   List<String> arrayNameUsersAccountC = [];
   List<String> arrayPaymentAmountC = [];
-  double totalPaymentC = 0.0;
+
 
   //PETICIONES A API---------------------------------------------
   Future<void> obtenerCuentas() async {
     var response = await getAccounts();
     if (response != "err_internet_conex") {
-      print('Respuesta cuentas:::: $response');
+      //print('Respuesta cuentas:::: $response');
       setState(() {
         //isLoading = false;
         if (response == 'empty') {
@@ -69,7 +65,7 @@ class _HomeViewState extends State<HomeView> {
     }
   }
   //PETICIONES A API---------------------------------------------
-  
+
   List accountArr = [
     {"image": "assets/img/p_personal.png", "name": "Personal Data", "tag": "1"},
     {"image": "assets/img/p_achi.png", "name": "Achievement", "tag": "2"},
@@ -160,6 +156,8 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
+    double responsiveHeight = MediaQuery.of(context).size.height;
+    double responsiveWidth = MediaQuery.of(context).size.width;
 
     final lineBarsData = [
       LineChartBarData(
@@ -186,250 +184,349 @@ class _HomeViewState extends State<HomeView> {
     return Scaffold(
       //backgroundColor: TColor.white,
       body: Container(
-        decoration: BoxDecoration(
-                      gradient: LinearGradient(colors: TColor.primaryG)),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Image.asset(
-                        "assets/img/bg_dots.png",
-                        height: media.width * 0.4,
-                        width: double.maxFinite,
-                        fit: BoxFit.fitHeight,
-                      ),
-                      Container(
-                        child: SingleChildScrollView(
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Accounts",
-                              style: TextStyle(
-                                  color: TColor.black,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700),
-                            ),
-                          ],
-                        ),
-                        IconButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const NotificationView(),
-                                ),
-                              );
-                            },
-                            icon: Image.asset(
-                              "assets/img/notification_active.png",
-                              width: 25,
-                              height: 25,
-                              fit: BoxFit.fitHeight,
-                            ))
-                      ],
-                    ),
-              
-                    const SizedBox(
-                    height: 25,
-                  ),
-                  //CARD CUENTAS------------------------------------------------------------------
-                  const SizedBox(
-                          height: 8,
-                        ),
-                        ListView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: arrayidAccount.length,
-                          itemBuilder: (context, index) {
-                            return Column(
-                              children: [
-                                const SizedBox(
-                                height: 20,
-                              ),
-                                Container(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                                  decoration: BoxDecoration(
-                                      color: TColor.white,
-                                      borderRadius: BorderRadius.circular(15),
-                                      boxShadow: const [
-                                        BoxShadow(color: Colors.black12, blurRadius: 2)
-                                      ]),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        arraynameAccount[index],
-                                        style: TextStyle(
-                                              color: TColor.black,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        height: 8,
-                                      ),
-                                      ListView.builder(
-                                        physics: const NeverScrollableScrollPhysics(),
-                                        shrinkWrap: true,
-                                        itemCount: arrayidAccount.length,
-                                        itemBuilder: (context, index) {
-                                              return SettingRow(
-                                                nameAccount: arraynameAccount[index],
-                                                onPressed: () {print('seleccionado:::: ${arraynameAccount[index]}');}, 
-                                                pass: arraypassword[index], paymentDate: arraypaymentAccount[index], banck: arrayBanks[index],
-                                              );
-                                        },
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                  
-                  
-                  //CARD CUENTAS------------------------------------------------------------------
-
-                  //---------------PRUEBA------------
-                  /*
-                  
-                    @override
-                      Widget build(BuildContext context) {
-                        return Scaffold(
-                          appBar: AppBar(
-                            title: Text('Tus cuentas'),
-                          ),
-                          body: ListView.builder(
-                            itemCount: arrayidAccount.length,
-                            itemBuilder: (context, index) {
-                              return Card(
-                                child: ListTile(
-                                  title: Text(arraynameAccount[index]),
-                                  subtitle: Text('ID: ${arrayidAccount[index]}'),
-                                  // Puedes agregar más widgets ListTile según necesites
-                                ),
-                              );
-                            },
-                          ),
-                        );
-                      }
-                    } */
-
-                  //--------------------------------
-                    SizedBox(
-                      height: media.width * 0.05,
-                    ),
-                    Container(
-                      padding:
-                          const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-                      decoration: BoxDecoration(
-                        color: TColor.primaryColor2.withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Row(
+        decoration:
+            BoxDecoration(gradient: LinearGradient(colors: TColor.primaryG)),
+        child: Stack(alignment: Alignment.center, children: [
+          Image.asset(
+            "assets/img/bg_dots.png",
+            height: media.width * 0.4,
+            width: double.maxFinite,
+            fit: BoxFit.fitHeight,
+          ),
+          Container(
+            child: SingleChildScrollView(
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            "Today Target",
-                            style: TextStyle(
-                                color: TColor.black,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Accounts",
+                                style: TextStyle(
+                                    color: TColor.black,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w700),
+                              ),
+                            ],
                           ),
-                          SizedBox(
-                            width: 70,
-                            height: 25,
-                            child: RoundButton(
-                              title: "Check",
-                              type: RoundButtonType.bgGradient,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
+                          IconButton(
                               onPressed: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                        const ActivityTrackerView(),
+                                        const NotificationView(),
                                   ),
                                 );
                               },
-                            ),
-                          )
+                              icon: Image.asset(
+                                "assets/img/notification_active.png",
+                                width: 25,
+                                height: 25,
+                                fit: BoxFit.fitHeight,
+                              ))
                         ],
                       ),
-                    ),
-                    SizedBox(
-                      height: media.width * 0.05,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Latest Workout",
-                          style: TextStyle(
-                              color: TColor.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700),
-                        ),
-                        TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            "See More",
-                            style: TextStyle(
-                                color: TColor.gray,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700),
-                          ),
-                        )
-                      ],
-                    ),
-                    ListView.builder(
-                        padding: EdgeInsets.zero,
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: lastWorkoutArr.length,
-                        itemBuilder: (context, index) {
-                          var wObj = lastWorkoutArr[index] as Map? ?? {};
-                          return InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const FinishedWorkoutView(),
-                                  ),
-                                );
-                              },
-                              child: WorkoutRow(wObj: wObj));
-                        }),
-                    SizedBox(
-                      height: media.width * 0.1,
-                    ),
-                  ],
+
+                      const SizedBox(
+                        height: 32,
+                      ),
+                      //CARD CUENTAS------------------------------------------------------------------
+                      CardAccount(responsiveHeight),
+
+                      //CARD CUENTAS------------------------------------------------------------------
+
+                      SizedBox(
+                        height: media.width * 0.1,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
+          )
+        ]),
+      ),
+    );
+  }
+
+  Container PaymentsAccount(BuildContext context, int index) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+      decoration: BoxDecoration(
+        color: TColor.primaryColor2.withOpacity(0.9),
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            "Pagos de cuenta",
+            style: TextStyle(
+                color: TColor.white, fontSize: 18, fontWeight: FontWeight.w700),
           ),
-                      )
-          ]
-          
-          
-          
-          
-          
-          
+          SizedBox(
+            width: 70,
+            height: 25,
+            child: RoundButton(
+              title: "Ver",
+              type: RoundButtonType.bgGradient,
+              fontSize: 16.5,
+              fontWeight: FontWeight.w400,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ActivityTrackerView(
+                      idAccount: arrayidAccount[index].toString(), accountName: arraynameAccount[index],),
+                  ),
+                );
+              },
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  ListView CardAccount(double responsiveHeight) {
+    var media = MediaQuery.of(context).size;
+    return ListView.builder(
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemCount: arrayidAccount.length,
+      itemBuilder: (context, index) {
+        return Column(
+          children: [
+            const SizedBox(
+              height: 20,
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+              decoration: BoxDecoration(
+                  color: TColor.white,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: const [
+                    BoxShadow(color: Colors.black12, blurRadius: 2)
+                  ]),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  NameAccount(index),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 35, right: 35),
+                    child: Column(
+                      children: [
+                        PaymentAccount(index),
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        PassAccount(index),
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        BankAccount(index),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Divider(
+                    height: 3,
+                    color: Colors.black,
+                  ),
+                  OptionsAccount(context, responsiveHeight, index)
+                ],
+              ),
+            ),
+            SizedBox(
+              height: media.width * 0.05,
+            ),
+            PaymentsAccount(context, index),
+          ],
+        );
+      },
+    );
+  }
+
+  Column OptionsAccount(
+      BuildContext context, double responsiveHeight, int index) {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            InkWell(
+              onTap: () {
+                print('Compartir datos...');
+              },
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 38,
+                    width: 26,
+                    child: Icon(
+                      Icons.share_outlined,
+                      color: TColor.black,
+                      size: 22,
+                    ),
+                  ),
+                  Text(
+                    'Compartir datos',
+                    style: TextStyle(
+                      color: TColor.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                print('Editar contraseña...');
+                ShowEditingAccount().showEditAccount(
+                  context,
+                  responsiveHeight,
+                  arrayidAccount[index],
+                  arraypassword[index],
+                  passController,
+                );
+              },
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 38,
+                    width: 26,
+                    child: Icon(
+                      Icons.edit,
+                      color: TColor.black,
+                      size: 22,
+                    ),
+                  ),
+                  Text(
+                    'Cambiar contraseña',
+                    style: TextStyle(
+                      color: TColor.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
+      ],
+    );
+  }
+
+  Row BankAccount(int index) {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            'Banco: ${arrayBanks[index]}',
+            style: TextStyle(
+              color: TColor.black,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 38,
+          width: 26,
+          child: Icon(
+            Icons.remove_red_eye,
+            color: TColor.black,
+            size: 22,
+          ),
+        ),
+        const SizedBox(
+          width: 22,
+        ),
+        SizedBox(
+          height: 38,
+          width: 26,
+          child: Icon(
+            Icons.copy,
+            color: TColor.black,
+            size: 22,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Row PassAccount(int index) {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            'Contraseña: ${arraypassword[index]}',
+            style: TextStyle(
+              color: TColor.black,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 38,
+          width: 26,
+          child: Icon(
+            Icons.remove_red_eye,
+            color: TColor.black,
+            size: 22,
+          ),
+        ),
+        const SizedBox(
+          width: 22,
+        ),
+        SizedBox(
+          height: 38,
+          width: 26,
+          child: Icon(
+            Icons.copy,
+            color: TColor.black,
+            size: 22,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Text PaymentAccount(int index) {
+    return Text(
+      'Mensualidad: ${arraypaymentAccount[index]}',
+      style: TextStyle(
+        color: TColor.black,
+        fontSize: 16,
+        fontWeight: FontWeight.w700,
+      ),
+    );
+  }
+
+  Text NameAccount(int index) {
+    return Text(
+      'Cuenta: ${arraynameAccount[index]}',
+      style: TextStyle(
+        color: TColor.black,
+        fontSize: 18,
+        fontWeight: FontWeight.w700,
       ),
     );
   }
