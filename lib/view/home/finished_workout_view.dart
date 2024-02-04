@@ -1,29 +1,69 @@
+// ignore_for_file: no_logic_in_create_state
+
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:fitness/common_widget/setting_row.dart';
 import 'package:fitness/common_widget/today_target_cell.dart';
-import 'package:fitness/common_widget/today_target_tree_cell.dart';
-import 'package:fitness/common_widget/today_target_two_cell.dart';
+import 'package:fitness/common_widget/today_target_four_cell.dart';
 import 'package:fitness/request/api_request.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
 import '../../common/colo_extension.dart';
-import '../../common_widget/round_button.dart';
 
 class FinishedWorkoutView extends StatefulWidget {
-  const FinishedWorkoutView({super.key, required this.userName, required this.idUser});
+  const FinishedWorkoutView(
+      {super.key,
+      required this.userName,
+      required this.idUser,
+      required this.paymentDate,
+      required this.profileUser,
+      required this.amountUser,
+      required this.phoneUser,
+      required this.pinUser,
+      required this.statusUser,
+      required this.genreUser});
   final String userName;
   final String idUser;
+  final String paymentDate;
+  final String profileUser;
+  final String amountUser;
+  final String phoneUser;
+  final String pinUser;
+  final String statusUser;
+  final String genreUser;
 
   @override
-  State<FinishedWorkoutView> createState() => _FinishedWorkoutViewState(userName, idUser);
+  State<FinishedWorkoutView> createState() => _FinishedWorkoutViewState(
+      userName,
+      idUser,
+      paymentDate,
+      profileUser,
+      amountUser,
+      phoneUser,
+      pinUser,
+      statusUser,
+      genreUser);
 }
 
 class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
-
-_FinishedWorkoutViewState(this.userName, this.idUser);
-final String userName;
+  _FinishedWorkoutViewState(
+      this.userName,
+      this.idUser,
+      this.paymentDate,
+      this.profileUser,
+      this.amountUser,
+      this.phoneUser,
+      this.pinUser,
+      this.statusUser,
+      this.genreUser);
+  final String userName;
   final String idUser;
+  final String paymentDate;
+  final String profileUser;
+  final String amountUser;
+  final String phoneUser;
+  final String pinUser;
+  final String statusUser;
+  final String genreUser;
 
   DateTime d = DateTime.now();
   String valueText = '';
@@ -55,12 +95,55 @@ final String userName;
   List<String> paymentDateUserE = [];
   List<String> arrayPaymentStatusE = [];
   List<String> arrayPaymentAmountE = [];
-  
-    //pagos de usuario 1
+
+  //calcular dias para proximo pago----------------------
+  String calcularProxPago(String paymentDay) {
+    //fecha actual
+    DateTime currentDate = DateTime.now();
+    print('currentDate::: $currentDate');
+
+    //dia de pago
+    int day = int.parse(paymentDay);
+    print('day::: $day');
+
+    DateTime fechaObjetivo;
+    //si el dia actual es posterior al dia de pago del mes actual, se avanza al sig mes para calcular los dias restantes
+    if (currentDate.day > day) {
+      //ultimo dia del mes actual
+      DateTime lastDate =
+          DateTime.utc(currentDate.year, currentDate.month + 1, 0);
+      print('lastDate::: $lastDate');
+
+      currentDate = currentDate.add(Duration(days: lastDate.day));
+      print('currentDate cambiado::: $currentDate');
+
+      // Crear la fecha objetivo del próximo mes
+      fechaObjetivo =
+          DateTime.utc(currentDate.year, currentDate.month + 1, day);
+    } else {
+      fechaObjetivo = DateTime.utc(currentDate.year, currentDate.month, day);
+    }
+    print('fechaObjetivo ::: $fechaObjetivo');
+
+    // Calcular la diferencia en días
+    String diasFaltantes =
+        fechaObjetivo.difference(currentDate).inDays.toString();
+    print('diasFaltantes ::: $diasFaltantes');
+
+    if (diasFaltantes == '0') {
+      return 'Hoy';
+    } else if (diasFaltantes == '1') {
+      return "Mañana";
+    } else {
+      return diasFaltantes;
+    }
+  }
+
+  //pagos de usuario--------------------------------------------------
   Future<void> obtenerPagosUsuario(String idUser) async {
     var response = await getPaymentsProfilesByUser(idUser);
     if (response != "err_internet_conex") {
-       print('Respuesta pagos:::: $response');
+      //print('Respuesta pagos:::: $response');
       setState(() {
         //isLoading = false;
         if (response == 'empty') {
@@ -86,11 +169,13 @@ final String userName;
       print('Sin conexion');
     }
   }
+
   @override
   void initState() {
     super.initState();
     obtenerPagosUsuario(idUser);
   }
+
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
@@ -147,23 +232,26 @@ final String userName;
                         Row(
                           children: [
                             Expanded(
-                          child: TodayTargetCell(
-                            icon: "assets/icons/dinero.png",
-                            value: totalPagado.toString(),
-                            title: "Total Pagado",
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 15,
-                        ),
-                        
-                        Expanded(
-                          child: TodayTargetCell(
-                            icon: "assets/icons/pago2.png",
-                            value: '5 días',
-                            title: "Próximo pago",
-                          ),
-                        ),
+                              child: TodayTargetCell(
+                                icon: "assets/icons/dinero.png",
+                                value: totalPagado.toString(),
+                                title: "Total Pagado",
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 15,
+                            ),
+                            Expanded(
+                              child: TodayTargetCell(
+                                icon: "assets/icons/pago2.png",
+                                value: calcularProxPago(paymentDate) == 'Hoy' ||
+                                        calcularProxPago(paymentDate) ==
+                                            'Mañana'
+                                    ? calcularProxPago(paymentDate)
+                                    : '${calcularProxPago(paymentDate)} dias',
+                                title: "Próximo pago",
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(
@@ -183,10 +271,152 @@ final String userName;
                               paymentDate: paymentDateUserA[index],
                               nameUser: arrayPaymentStatusA[index],
                               paymentAmount: arrayPaymentAmountA[index],
-                              profileUser: '',
                             );
                           },
                         )
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: media.width * 0.1,
+                  ),
+                  //CONTENEDOR DE DATOS DE USUARIO
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 15),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(colors: [
+                        TColor.primaryColor2.withOpacity(0.3),
+                        TColor.primaryColor1.withOpacity(0.3)
+                      ]),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Datos de Perfil",
+                              style: TextStyle(
+                                  color: TColor.black,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TodayTargetFourCell(
+                                icon: "assets/icons/dinero.png",
+                                value: 'account',
+                                title: "Cuenta:",
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TodayTargetFourCell(
+                                icon: "assets/icons/dinero.png",
+                                value: 'pass',
+                                title: "Contraseña:",
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TodayTargetFourCell(
+                                icon: "assets/icons/dinero.png",
+                                value: profileUser,
+                                title: "Usuario:",
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TodayTargetFourCell(
+                                icon: "assets/icons/dinero.png",
+                                value: pinUser,
+                                title: "Pin:",
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TodayTargetFourCell(
+                                icon: "assets/icons/dinero.png",
+                                value: userName,
+                                title: "Nombre:",
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TodayTargetFourCell(
+                                icon: "assets/icons/dinero.png",
+                                value: phoneUser,
+                                title: "Telefono:",
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TodayTargetFourCell(
+                                icon: "assets/icons/dinero.png",
+                                value: paymentDate,
+                                title: "Mensualidad:",
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TodayTargetFourCell(
+                                icon: "assets/icons/dinero.png",
+                                value: amountUser,
+                                title: "Monto:",
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
@@ -201,6 +431,7 @@ final String userName;
       ),
     );
   }
+
   SizedBox DateButton() {
     return SizedBox(
       width: 250,
@@ -263,6 +494,7 @@ final String userName;
       ),
     );
   }
+
   buildCalendarDialogButton() {
     const dayTextStyle =
         TextStyle(color: Colors.black, fontWeight: FontWeight.w700);

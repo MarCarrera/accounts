@@ -13,7 +13,8 @@ import '../../common_widget/latest_activity_row.dart';
 import '../../common_widget/today_target_cell.dart';
 
 class ActivityTrackerView extends StatefulWidget {
-  const ActivityTrackerView({super.key, required this.idAccount, required this.accountName});
+  const ActivityTrackerView(
+      {super.key, required this.idAccount, required this.accountName});
 
   final String idAccount;
   final String accountName;
@@ -82,8 +83,10 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
   bool dataAccountAclear = false;
 
   //OBTENER PAGOS DE CUENTA-------------------------------
-  Future<void> obtenerPagosCuenta(String idAccount, String date1, String date2) async {
-    var response = await getPaymentsProfilesByAccountDate(idAccount, date1, date2);
+  Future<void> obtenerPagosCuenta(
+      String idAccount, String date1, String date2) async {
+    var response =
+        await getPaymentsProfilesByAccountDate(idAccount, date1, date2);
     if (response != "err_internet_conex") {
       print('Respuesta pagos cuenta :::: $response');
       setState(() {
@@ -107,7 +110,7 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
               totalPagado += amountPayA ?? 0.0;
               ganancia = totalPagado - 299;
               liquidar = ganancia - retiro;
-              if(totalPagado > 299){
+              if (totalPagado > 299) {
                 envio = totalPagado - ganancia - enviado;
               }
             }
@@ -120,11 +123,12 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
       print('Sin conexion');
     }
   }
+
   //OBTENER USUARIOS DE LA CUENTA ------------------------
-Future<void> obtenerPerfilesCuenta(String idAccount) async {
+  Future<void> obtenerPerfilesCuenta(String idAccount) async {
     var response = await getProfilesByAccount(idAccount);
     if (response != "err_internet_conex") {
-      print('Respuesta perfiles:::: $response');
+      //print('Respuesta perfiles:::: $response');
       setState(() {
         //isLoading = false;
         if (response == 'empty') {
@@ -148,6 +152,7 @@ Future<void> obtenerPerfilesCuenta(String idAccount) async {
       print('Sin conexion');
     }
   }
+
   //------------------------------------------------------
   @override
   void initState() {
@@ -318,8 +323,7 @@ Future<void> obtenerPerfilesCuenta(String idAccount) async {
                           },
                           paymentDate: paymentDateAccountA[index],
                           nameUser: arrayNameUsersAccountA[index],
-                          paymentAmount: arrayPaymentAmountA[index], 
-                          profileUser: arrayprofileA[index],
+                          paymentAmount: arrayPaymentAmountA[index],
                         );
                       },
                     )
@@ -353,21 +357,29 @@ Future<void> obtenerPerfilesCuenta(String idAccount) async {
                             context,
                             MaterialPageRoute(
                               builder: (context) => FinishedWorkoutView(
-                                userName: arraynameA[index], 
-                                idUser: arrayidUserA[index],),
+                                userName: arraynameA[index],
+                                idUser: arrayidUserA[index],
+                                paymentDate: arraypaymentA[index],
+                                profileUser: arrayprofileA[index],
+                                amountUser: arrayamountA[index],
+                                phoneUser: arrayphoneA[index],
+                                pinUser: arraypinA[index],
+                                statusUser: arraystatusA[index],
+                                genreUser: arrayGenresA[index],
+                              ),
                             ),
                           );
                         },
                         child: WorkoutRow(
-                          idUser: arrayidUserA[index], 
-                          profileUser: arrayprofileA[index],  
-                          nameUser: arraynameA[index],  
-                          paymentUser: arraypaymentA[index],  
-                          amountUser: arrayamountA[index],  
-                          phoneUser: arrayphoneA[index],  
-                          pinUser: arraypinA[index],  
-                          statusUser: arraystatusA[index],  
-                          genreUser: arrayGenresA[index]));
+                            idUser: arrayidUserA[index],
+                            profileUser: arrayprofileA[index],
+                            nameUser: arraynameA[index],
+                            paymentUser: arraypaymentA[index],
+                            amountUser: arrayamountA[index],
+                            phoneUser: arrayphoneA[index],
+                            pinUser: arraypinA[index],
+                            statusUser: arraystatusA[index],
+                            genreUser: arrayGenresA[index]));
                   }),
               SizedBox(
                 height: media.width * 0.1,
