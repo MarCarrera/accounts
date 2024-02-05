@@ -1,0 +1,165 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:fitness/common/colo_extension.dart';
+import 'package:fitness/request/api_request.dart';
+import 'package:fitness/view/utils/text_dorm.dart';
+import 'package:flutter/material.dart';
+import 'package:quickalert/quickalert.dart';
+
+final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+class ShowEditingDialog {
+  Future<void> showEditDialog(
+      BuildContext context,
+      double responsiveWidth,
+      String idUser,
+      String name,
+      String payment,
+      String phone,
+      String pin,
+      String amount,
+      String genre,
+      String status,
+      TextEditingController nameController,
+      TextEditingController paymentController,
+      TextEditingController amountController,
+      TextEditingController genreController,
+      TextEditingController phoneController,
+      TextEditingController statusController,
+      TextEditingController pinController) async {
+    return await showDialog(
+        context: context,
+        builder: (context) {
+          //bool isChecked = false;
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              title: Text(
+                "Editar usuario",
+                style: TextStyle(
+                    fontSize: 24,
+                    color: TColor.secondaryColor1,
+                    fontWeight: FontWeight.w700),
+              ),
+              content: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Divider(height: 30, color: TColor.secondaryColor1),
+                      TextForm(
+                          controller: nameController,
+                          text: name,
+                          icon: Icons.person_2),
+                      const SizedBox(height: 10),
+                      TextForm(
+                          controller: paymentController,
+                          text: payment,
+                          icon: Icons.calendar_month),
+                      const SizedBox(height: 10),
+                      TextForm(
+                          controller: amountController,
+                          text: amount,
+                          icon: Icons.monetization_on),
+                      const SizedBox(height: 10),
+                      TextForm(
+                          controller: genreController,
+                          text: genre,
+                          icon: Icons.person_2_outlined),
+                      const SizedBox(height: 10),
+                      TextForm(
+                          controller: phoneController,
+                          text: phone,
+                          icon: Icons.phone_android_outlined),
+                      const SizedBox(height: 10),
+                      TextForm(
+                          controller: pinController,
+                          text: pin,
+                          icon: Icons.password),
+                      const SizedBox(height: 10),
+                      TextForm(
+                          controller: statusController,
+                          text: status,
+                          icon: Icons.check_box),
+                      const SizedBox(height: 10),
+                    ],
+                  ),
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                    onPressed: () {
+                      // if (_formKey.currentState!.validate()) {
+                      Navigator.of(context).pop();
+                      //}
+                    },
+                    child: Text(
+                      "Cancelar",
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: TColor.secondaryColor1,
+                          fontWeight: FontWeight.w700),
+                    )),
+                TextButton(
+                    onPressed: () async {},
+                    child: GestureDetector(
+                      onTap: () async {
+                        if (_formKey.currentState!.validate()) {
+                          await QuickAlert.show(
+                            context: context,
+                            type: QuickAlertType.info,
+                            title: 'Actualizar usuario',
+                            text:
+                                'Inicio de Mensualidad: ${paymentController.text} \nTeléfono: ${phoneController.text} \nCuentaNetflix00A@gmail.com \nUsuario: A \nPin: ${pinController.text} ',
+                            textColor: TColor.secondaryColor1,
+                            titleColor: TColor.secondaryColor1,
+                            confirmBtnText: 'Confirmar',
+                            confirmBtnColor: TColor.secondaryColor1,
+                            onConfirmBtnTap: () async {
+                              //request para actualizar los datos de usuario en Firebase
+
+                              await updateProfileData(
+                                  idUser: idUser,
+                                  nameUser: nameController.text,
+                                  paymentDateUser: paymentController.text,
+                                  amount: amountController.text,
+                                  phoneUser: phoneController.text,
+                                  pinUser: pinController.text,
+                                  statusUser: statusController.text,
+                                  genre: genreController.text);
+
+                              //limpiar controladores de data usuario
+                              //cleanDataUser();
+
+                              //actualiza datos de Firebase en vista
+                              //uploadData(idAccount);
+                              Navigator.of(context).pop();
+                            },
+                          );
+                          leadingImage:
+                          'assets/info.gif';
+                          Navigator.of(context).pop();
+                        }
+                      },
+                      child: Text(
+                        "Actualizar",
+                        style: TextStyle(
+                            fontSize: 20,
+                            color: TColor.secondaryColor1,
+                            fontWeight: FontWeight.w700),
+                      ),
+                    ))
+              ],
+            );
+          });
+        });
+  }
+
+  /*cleanDataUser() {
+    nameController.clear();
+    paymentController.clear();
+    phoneController.clear();
+    pinController.clear();
+    //statusController.clear();
+  }*/
+}

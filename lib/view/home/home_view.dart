@@ -29,18 +29,6 @@ class _HomeViewState extends State<HomeView> {
   List<String> arraypaymentAccount = [];
   List<String> arraypassword = [];
   List<String> arrayBanks = [];
-  
- 
-
-  List<String> paymentDateAccountB = [];
-  List<String> arrayNameUsersAccountB = [];
-  List<String> arrayPaymentAmountB = [];
-
-
-  List<String> paymentDateAccountC = [];
-  List<String> arrayNameUsersAccountC = [];
-  List<String> arrayPaymentAmountC = [];
-
 
   //PETICIONES A API---------------------------------------------
   Future<void> obtenerCuentas() async {
@@ -285,7 +273,10 @@ class _HomeViewState extends State<HomeView> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => ActivityTrackerView(
-                      idAccount: arrayidAccount[index].toString(), accountName: arraynameAccount[index],),
+                      idAccount: arrayidAccount[index].toString(),
+                      accountName: arraynameAccount[index],
+                      pass: arraypassword[index],
+                    ),
                   ),
                 );
               },

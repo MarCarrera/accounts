@@ -14,7 +14,7 @@ class TodayTargetFourCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 70,
+      height: 46,
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: TColor.white,
@@ -33,7 +33,7 @@ class TodayTargetFourCell extends StatelessWidget {
           ),
           Expanded(
               child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ShaderMask(
@@ -54,15 +54,21 @@ class TodayTargetFourCell extends StatelessWidget {
                       fontSize: 18),
                 ),
               ),
+            ],
+          )),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
               Text(
                 value,
                 style: TextStyle(
                   color: TColor.black,
-                  fontSize: 20,
+                  fontSize: value.length > 20 ? 15 : 20,
                 ),
               ),
             ],
-          ))
+          )
         ],
       ),
     );

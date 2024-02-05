@@ -48,6 +48,9 @@ dependencies:
   http: ^1.1.0
   quickalert: ^1.0.2
   calendar_date_picker2: ^0.5.3
+  nepali_utils: ^3.0.4
+  url_launcher: ^6.0.12
+  board_datetime_picker: #https://pub.dev/packages/board_datetime_picker
 
 dependency_overrides: 
   intl: ^0.18.1
@@ -78,7 +81,6 @@ flutter:
   assets:
     - assets/img/
     - assets/icons/
-    - assets/images/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

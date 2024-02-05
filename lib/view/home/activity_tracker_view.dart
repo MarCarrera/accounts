@@ -1,3 +1,5 @@
+// ignore_for_file: no_logic_in_create_state
+
 import 'package:fitness/common_widget/setting_row.dart';
 import 'package:fitness/common_widget/today_target_two_cell.dart';
 import 'package:fitness/common_widget/workout_row.dart';
@@ -14,21 +16,26 @@ import '../../common_widget/today_target_cell.dart';
 
 class ActivityTrackerView extends StatefulWidget {
   const ActivityTrackerView(
-      {super.key, required this.idAccount, required this.accountName});
+      {super.key,
+      required this.idAccount,
+      required this.accountName,
+      required this.pass});
 
   final String idAccount;
   final String accountName;
+  final String pass;
 
   @override
   State<ActivityTrackerView> createState() =>
-      _ActivityTrackerViewState(idAccount, accountName);
+      _ActivityTrackerViewState(idAccount, accountName, pass);
 }
 
 class _ActivityTrackerViewState extends State<ActivityTrackerView> {
   //CONSTRUCTOR DE CLASE PARA HACER USO DE LAS VARIABLES COMPARTIDAS
-  _ActivityTrackerViewState(this.idAccount, this.accountName);
+  _ActivityTrackerViewState(this.idAccount, this.accountName, this.pass);
   final String idAccount;
   final String accountName;
+  final String pass;
 
   int touchedIndex = -1;
 
@@ -366,6 +373,8 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
                                 pinUser: arraypinA[index],
                                 statusUser: arraystatusA[index],
                                 genreUser: arrayGenresA[index],
+                                account: accountName,
+                                pass: pass,
                               ),
                             ),
                           );

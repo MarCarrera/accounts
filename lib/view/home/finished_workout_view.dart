@@ -20,7 +20,9 @@ class FinishedWorkoutView extends StatefulWidget {
       required this.phoneUser,
       required this.pinUser,
       required this.statusUser,
-      required this.genreUser});
+      required this.genreUser,
+      required this.account,
+      required this.pass});
   final String userName;
   final String idUser;
   final String paymentDate;
@@ -30,6 +32,8 @@ class FinishedWorkoutView extends StatefulWidget {
   final String pinUser;
   final String statusUser;
   final String genreUser;
+  final String account;
+  final String pass;
 
   @override
   State<FinishedWorkoutView> createState() => _FinishedWorkoutViewState(
@@ -41,7 +45,9 @@ class FinishedWorkoutView extends StatefulWidget {
       phoneUser,
       pinUser,
       statusUser,
-      genreUser);
+      genreUser,
+      account,
+      pass);
 }
 
 class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
@@ -54,7 +60,9 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
       this.phoneUser,
       this.pinUser,
       this.statusUser,
-      this.genreUser);
+      this.genreUser,
+      this.account,
+      this.pass);
   final String userName;
   final String idUser;
   final String paymentDate;
@@ -64,6 +72,8 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
   final String pinUser;
   final String statusUser;
   final String genreUser;
+  final String account;
+  final String pass;
 
   DateTime d = DateTime.now();
   String valueText = '';
@@ -95,6 +105,47 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
   List<String> paymentDateUserE = [];
   List<String> arrayPaymentStatusE = [];
   List<String> arrayPaymentAmountE = [];
+  //CONTROLADORES----------------------------------------------------------------
+  final TextEditingController nameController = TextEditingController();
+
+  final TextEditingController paymentController = TextEditingController();
+
+  final TextEditingController amountController = TextEditingController();
+
+  final TextEditingController genreController = TextEditingController();
+
+  final TextEditingController phoneController = TextEditingController();
+
+  final TextEditingController pinController = TextEditingController();
+
+  final TextEditingController statusController = TextEditingController();
+
+  final TextEditingController idAccountUserController = TextEditingController();
+
+  final TextEditingController profileUserController = TextEditingController();
+
+  //DIALOGOS--------------------------------------------------------------------
+  /*Future<void> shareMessageUser(String phoneUser, String msg) async {
+    //final directory = await getApplicationDocumentsDirectory();
+    //final image = File('${directory.path}/acceso.png');
+    //final phoneNumber = '+52$phone';
+    String phoneNumber = '+52$phoneUser';
+    //image.writeAsBytesSync(bytes);
+
+    // Mensaje que contiene la imagen
+    String message = msg;
+
+    // Combinar el mensaje y la imagen
+    //String combinedMessage = '$message ${image.path}';
+    // URL de WhatsApp con el número de teléfono y mensaje
+    String whatsappUrl =
+        'https://wa.me/$phoneNumber?text=${Uri.encodeFull(message)}';
+
+    // Abrir el enlace en WhatsApp
+    await launch(whatsappUrl);
+
+    //await Share.shareFiles([image.path]);
+  }*/
 
   //calcular dias para proximo pago----------------------
   String calcularProxPago(String paymentDay) {
@@ -179,6 +230,7 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
+    double responsiveWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       body: SafeArea(
@@ -198,7 +250,7 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
                       SearchButton(),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 14,
                   ),
                   //CONTENEDOR DE TARJETA O CARD DE PAGOS
@@ -224,6 +276,7 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
                                   fontSize: 18,
                                   fontWeight: FontWeight.w700),
                             ),
+                            AddButton(),
                           ],
                         ),
                         const SizedBox(
@@ -303,6 +356,7 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
                                   fontSize: 18,
                                   fontWeight: FontWeight.w700),
                             ),
+                            OptionsButton(),
                           ],
                         ),
                         const SizedBox(
@@ -313,7 +367,7 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
                             Expanded(
                               child: TodayTargetFourCell(
                                 icon: "assets/icons/dinero.png",
-                                value: 'account',
+                                value: account,
                                 title: "Cuenta:",
                               ),
                             ),
@@ -327,7 +381,7 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
                             Expanded(
                               child: TodayTargetFourCell(
                                 icon: "assets/icons/dinero.png",
-                                value: 'pass',
+                                value: pass,
                                 title: "Contraseña:",
                               ),
                             ),
@@ -417,6 +471,17 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
                             ),
                           ],
                         ),
+                        /*OptionsUser(
+                            context,
+                            responsiveWidth,
+                            idUser,
+                            userName,
+                            paymentDate,
+                            amountUser,
+                            phoneUser,
+                            pinUser,
+                            statusUser,
+                            genreUser),*/
                       ],
                     ),
                   ),
@@ -455,7 +520,7 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
             color: Colors.transparent,
             child: Text(
               startDate == '' ? '$date1 a $date2' : '$startDate a $endDate',
-              style: TextStyle(fontSize: 18),
+              style: const TextStyle(fontSize: 18),
             ),
           )),
     );
@@ -490,6 +555,75 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
               Icons.search,
               color: Colors.white,
               size: 30,
+            )),
+      ),
+    );
+  }
+
+  SizedBox AddButton() {
+    return SizedBox(
+      width: 30,
+      height: 30,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: TColor.primaryG,
+          ),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: MaterialButton(
+            onPressed: () {
+              print('fechas seleccionadas:::: $startDate y $endDate');
+              print('obteniendo pagos usuario...');
+              obtenerPagosUsuario(idUser);
+            },
+            padding: EdgeInsets.zero,
+            height: 30,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+            textColor: TColor.primaryColor1,
+            minWidth: double.maxFinite,
+            elevation: 0,
+            color: Colors.transparent,
+            child: const Icon(
+              Icons.add,
+              color: Colors.white,
+              size: 20,
+            )),
+      ),
+    );
+  }
+
+  SizedBox OptionsButton() {
+    var media = MediaQuery.of(context).size;
+    return SizedBox(
+      width: 30,
+      height: 30,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: TColor.primaryG,
+          ),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: MaterialButton(
+            onPressed: () {
+              print('fechas seleccionadas:::: $startDate y $endDate');
+              print('obteniendo pagos usuario...');
+              obtenerPagosUsuario(idUser);
+            },
+            padding: EdgeInsets.zero,
+            height: 30,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+            textColor: TColor.primaryColor1,
+            minWidth: double.maxFinite,
+            elevation: 0,
+            color: Colors.transparent,
+            child: Icon(
+              Icons.menu,
+              color: Colors.white,
+              size: 20,
             )),
       ),
     );
@@ -693,4 +827,100 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
       ),
     );
   }
+
+  /*Positioned OptionsUser(
+    BuildContext context,
+    double responsiveWidth,
+    String idUser,
+    String nameUser,
+    String payment,
+    String amount,
+    String phone,
+    String pin,
+    String status,
+    String genre,
+  ) {
+    return Positioned(
+        top: 150.0,
+        left: 250.0,
+        right: 0.0,
+        child: ExpandableMenu(
+          width: 40.0,
+          height: 40.0,
+          backgroundColor: Colors.white.withOpacity(0.8),
+          iconColor: TColor.secondaryColor1,
+          items: [
+            GestureDetector(
+              onTap: () async {
+                // print("enviar mensaje");
+                await shareMessageUser(phone, 'mensaje de prueba');
+              },
+              child: Icon(
+                Icons.email,
+                color: TColor.secondaryColor1,
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                print("editar usuario");
+                ShowEditingDialog().showEditDialog(
+                    context,
+                    responsiveWidth,
+                    idUser,
+                    nameUser,
+                    payment,
+                    phone,
+                    pin,
+                    amount,
+                    genre,
+                    status,
+                    nameController,
+                    paymentController,
+                    amountController,
+                    genreController,
+                    phoneController,
+                    statusController,
+                    pinController);
+              },
+              child: Icon(
+                Icons.edit,
+                color: TColor.secondaryColor1,
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                print("compartir usuario");
+                
+              },
+              child: Icon(
+                Icons.share,
+                color: TColor.secondaryColor1,
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                print("liberar usuario");
+                ShowCleanDataUser().showCleanDataDialog(context, idUser);
+              },
+              child: Icon(
+                Icons.cleaning_services_rounded,
+                color: TColor.secondaryColor1,
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                print("eliminar usuario");
+                ShowCleanDataUser().showDeleteDialog(context, idUser);
+              },
+              child: Icon(
+                Icons.delete,
+                color: TColor.secondaryColor1,
+              ),
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+          ],
+        ));
+  }*/
 }
