@@ -3,6 +3,7 @@ import 'package:fitness/common_widget/round_button.dart';
 import 'package:fitness/common_widget/setting_row.dart';
 import 'package:fitness/common_widget/workout_row.dart';
 import 'package:fitness/request/api_request.dart';
+import 'package:fitness/view/utils/buttonOptions.dart';
 import 'package:fitness/view/utils/show_editing_account.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -206,13 +207,14 @@ class _HomeViewState extends State<HomeView> {
                           ),
                           IconButton(
                               onPressed: () {
-                                Navigator.push(
+                                print('Navegando::::');
+                                /*Navigator.push(
                                   context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const NotificationView(),
-                                  ),
-                                );
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                      const ButtonOptions(),
+                                    ),
+                                  ); */
                               },
                               icon: Image.asset(
                                 "assets/img/notification_active.png",

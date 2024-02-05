@@ -1,4 +1,7 @@
 import 'package:board_datetime_picker/board_datetime_picker.dart';
+import 'package:fitness/common/colo_extension.dart';
+import 'package:fitness/request/api_request.dart';
+import 'package:fitness/view/utils/text_dorm.dart';
 import 'package:flutter/material.dart';
 import 'package:nepali_date_picker/nepali_date_picker.dart';
 import 'package:nepali_utils/nepali_utils.dart';
@@ -28,11 +31,11 @@ class ShowAddPayment {
           //bool isChecked = false;
           return StatefulBuilder(builder: (context, setState) {
             return AlertDialog(
-              title: const Text(
+              title: Text(
                 "Agregar pago",
                 style: TextStyle(
                     fontSize: 24,
-                    color: kPrimaryColorBlueGray,
+                    color: TColor.secondaryColor1,
                     fontWeight: FontWeight.w700),
               ),
               content: Form(
@@ -41,7 +44,7 @@ class ShowAddPayment {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Divider(height: 30, color: kPrimaryColorBlueGray),
+                     Divider(height: 30, color: TColor.secondaryColor1),
                       InkWell(
                         onTap: () async {
                           final result = await showBoardDateTimePicker(
@@ -120,11 +123,11 @@ class ShowAddPayment {
                       Navigator.of(context).pop();
                       //}
                     },
-                    child: const Text(
+                    child: Text(
                       "Cancelar",
                       style: TextStyle(
                           fontSize: 20,
-                          color: kPrimaryColorBlueGray,
+                          color: TColor.secondaryColor1,
                           fontWeight: FontWeight.w700),
                     )),
                 TextButton(
@@ -138,10 +141,10 @@ class ShowAddPayment {
                             title: 'Agregar nuevo pago',
                             text:
                                 'Fecha de Pago: $formattedDate \nMonto: ${amountPayController.text} ',
-                            textColor: kPrimaryDarkPurple,
-                            titleColor: kPrimaryDarkPurple,
+                            textColor: TColor.secondaryColor1,
+                            titleColor: TColor.secondaryColor1,
                             confirmBtnText: 'Confirmar',
-                            confirmBtnColor: kPrimaryDarkPurple,
+                            confirmBtnColor: TColor.secondaryColor1,
                             onConfirmBtnTap: () async {
                               //request para actualizar los datos de usuario en Firebase
                               await addPaymentProfileData(
@@ -162,11 +165,11 @@ class ShowAddPayment {
                           Navigator.of(context).pop();
                         }
                       },
-                      child: const Text(
+                      child: Text(
                         "Agregar",
                         style: TextStyle(
                             fontSize: 20,
-                            color: kPrimaryColorBlueGray,
+                            color: TColor.secondaryColor1,
                             fontWeight: FontWeight.w700),
                       ),
                     ))

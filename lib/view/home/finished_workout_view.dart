@@ -5,9 +5,12 @@ import 'package:fitness/common_widget/setting_row.dart';
 import 'package:fitness/common_widget/today_target_cell.dart';
 import 'package:fitness/common_widget/today_target_four_cell.dart';
 import 'package:fitness/request/api_request.dart';
+import 'package:fitness/view/home/notification_view.dart';
+import 'package:fitness/view/utils/buttonOptions.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../common/colo_extension.dart';
+import 'package:expandable_fab_menu/expandable_fab_menu.dart';
 
 class FinishedWorkoutView extends StatefulWidget {
   const FinishedWorkoutView(
@@ -356,7 +359,7 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
                                   fontSize: 18,
                                   fontWeight: FontWeight.w700),
                             ),
-                            OptionsButton(),
+                            ButtonOptions(),
                           ],
                         ),
                         const SizedBox(
@@ -573,9 +576,7 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
         ),
         child: MaterialButton(
             onPressed: () {
-              print('fechas seleccionadas:::: $startDate y $endDate');
-              print('obteniendo pagos usuario...');
-              obtenerPagosUsuario(idUser);
+                                
             },
             padding: EdgeInsets.zero,
             height: 30,

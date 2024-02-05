@@ -1,9 +1,9 @@
+import 'package:fitness/common/colo_extension.dart';
+import 'package:fitness/request/api_request.dart';
+import 'package:fitness/view/utils/text_dorm.dart';
 import 'package:flutter/material.dart';
-import 'package:menu_drawer_1/v1.0/View/Profiles/components/utils/text_form.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../../../../components/constants.dart';
-import '../../../../Controller/Request/api_request.dart';
 
 final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -28,11 +28,11 @@ class ShowInputDialog {
           //bool isChecked = false;
           return StatefulBuilder(builder: (context, setState) {
             return AlertDialog(
-              title: const Text(
+              title: Text(
                 "Agregar usuario",
                 style: TextStyle(
                     fontSize: 24,
-                    color: kPrimaryColorBlueGray,
+                    color: TColor.secondaryColor1,
                     fontWeight: FontWeight.w700),
               ),
               content: Form(
@@ -41,7 +41,7 @@ class ShowInputDialog {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Divider(height: 30, color: kPrimaryColorBlueGray),
+                      Divider(height: 30, color: TColor.secondaryColor1),
                       TextForm(
                           controller: idAccountUserController,
                           text: 'Cuenta',
@@ -98,11 +98,11 @@ class ShowInputDialog {
                       Navigator.of(context).pop();
                       //}
                     },
-                    child: const Text(
+                    child: Text(
                       "Cancelar",
                       style: TextStyle(
                           fontSize: 20,
-                          color: kPrimaryColorBlueGray,
+                          color: TColor.secondaryColor1,
                           fontWeight: FontWeight.w700),
                     )),
                 TextButton(
@@ -116,10 +116,10 @@ class ShowInputDialog {
                             title: 'Confirmar usuario',
                             text:
                                 'Inicio de Mensualidad: ${paymentController.text} \nTeléfono: ${phoneController.text} \nCuentaNetflix00A@gmail.com \nUsuario: A \nPin: ${pinController.text} ',
-                            textColor: kPrimaryDarkPurple,
-                            titleColor: kPrimaryDarkPurple,
+                            textColor: TColor.secondaryColor1,
+                            titleColor: TColor.secondaryColor1,
                             confirmBtnText: 'Confirmar',
-                            confirmBtnColor: kPrimaryDarkPurple,
+                            confirmBtnColor: TColor.secondaryColor1,
                             onConfirmBtnTap: () async {
                               print('datos guardados');
                               //request para guardar los datos de usuario en Firebase
@@ -146,11 +146,11 @@ class ShowInputDialog {
                           Navigator.of(context).pop();
                         }
                       },
-                      child: const Text(
+                      child: Text(
                         "Agregar",
                         style: TextStyle(
                             fontSize: 20,
-                            color: kPrimaryColorBlueGray,
+                            color: TColor.secondaryColor1,
                             fontWeight: FontWeight.w700),
                       ),
                     ))

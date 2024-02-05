@@ -50,7 +50,10 @@ dependencies:
   calendar_date_picker2: ^0.5.3
   nepali_utils: ^3.0.4
   url_launcher: ^6.0.12
+  expandable_fab_menu: ^0.0.1
   board_datetime_picker: #https://pub.dev/packages/board_datetime_picker
+  nepali_date_picker: ^5.3.3
+  popover: ^0.2.8+2
 
 dependency_overrides: 
   intl: ^0.18.1
