@@ -7,6 +7,7 @@ import 'package:fitness/view/utils/buttonOptions.dart';
 import 'package:fitness/view/utils/show_editing_account.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:simple_animation_progress_bar/simple_animation_progress_bar.dart';
 import 'package:simple_circular_progress_bar/simple_circular_progress_bar.dart';
 import '../../common/colo_extension.dart';

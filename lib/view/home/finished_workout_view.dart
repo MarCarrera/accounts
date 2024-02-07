@@ -8,7 +8,9 @@ import 'package:fitness/request/api_request.dart';
 import 'package:fitness/view/home/notification_view.dart';
 import 'package:fitness/view/utils/buttonOptions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../common/colo_extension.dart';
 import 'package:expandable_fab_menu/expandable_fab_menu.dart';
 
@@ -87,6 +89,7 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
     DateTime.now(),
   ];
   double totalPagado = 0.0;
+  
 
   String date1 = DateFormat('yyyy-MM-dd')
       .format(DateTime(DateTime.now().year, DateTime.now().month, 1));
@@ -127,39 +130,16 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
 
   final TextEditingController profileUserController = TextEditingController();
 
-  //DIALOGOS--------------------------------------------------------------------
-  /*Future<void> shareMessageUser(String phoneUser, String msg) async {
-    //final directory = await getApplicationDocumentsDirectory();
-    //final image = File('${directory.path}/acceso.png');
-    //final phoneNumber = '+52$phone';
-    String phoneNumber = '+52$phoneUser';
-    //image.writeAsBytesSync(bytes);
-
-    // Mensaje que contiene la imagen
-    String message = msg;
-
-    // Combinar el mensaje y la imagen
-    //String combinedMessage = '$message ${image.path}';
-    // URL de WhatsApp con el número de teléfono y mensaje
-    String whatsappUrl =
-        'https://wa.me/$phoneNumber?text=${Uri.encodeFull(message)}';
-
-    // Abrir el enlace en WhatsApp
-    await launch(whatsappUrl);
-
-    //await Share.shareFiles([image.path]);
-  }*/
+  
 
   //calcular dias para proximo pago----------------------
-  String calcularProxPago(String paymentDay) {
+  String calcularProxPago(String paymentDay, FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) {
     //fecha actual
     DateTime currentDate = DateTime.now();
     print('currentDate::: $currentDate');
-
     //dia de pago
     int day = int.parse(paymentDay);
     print('day::: $day');
-
     DateTime fechaObjetivo;
     //si el dia actual es posterior al dia de pago del mes actual, se avanza al sig mes para calcular los dias restantes
     if (currentDate.day > day) {
@@ -170,7 +150,6 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
 
       currentDate = currentDate.add(Duration(days: lastDate.day));
       print('currentDate cambiado::: $currentDate');
-
       // Crear la fecha objetivo del próximo mes
       fechaObjetivo =
           DateTime.utc(currentDate.year, currentDate.month + 1, day);
@@ -178,7 +157,6 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
       fechaObjetivo = DateTime.utc(currentDate.year, currentDate.month, day);
     }
     print('fechaObjetivo ::: $fechaObjetivo');
-
     // Calcular la diferencia en días
     String diasFaltantes =
         fechaObjetivo.difference(currentDate).inDays.toString();
@@ -187,11 +165,29 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
     if (diasFaltantes == '0') {
       return 'Hoy';
     } else if (diasFaltantes == '1') {
+      mostrarNotificacion(flutterLocalNotificationsPlugin);
       return "Mañana";
     } else {
       return diasFaltantes;
     }
   }
+  Future<void> mostrarNotificacion(FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) async {
+  const AndroidNotificationDetails androidPlatformChannelSpecifics =
+      AndroidNotificationDetails(
+    'Accounts App', 'Próximo pago de mensualidad', 'Mañana se realizan nuevos pagos de perfiles de Netflix.',
+    importance: Importance.max,
+    priority: Priority.high,
+  );
+  const NotificationDetails platformChannelSpecifics =
+      NotificationDetails(android: androidPlatformChannelSpecifics);
+  await flutterLocalNotificationsPlugin.show(
+    0, // ID de la notificación
+    'Próximo pago', // Título de la notificación
+    'El pago es mañana', // Contenido de la notificación
+    platformChannelSpecifics,
+    payload: 'Próximo pago', // Datos adicionales
+  );
+}
 
   //pagos de usuario--------------------------------------------------
   Future<void> obtenerPagosUsuario(String idUser) async {
@@ -300,11 +296,11 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
                             Expanded(
                               child: TodayTargetCell(
                                 icon: "assets/icons/pago2.png",
-                                value: calcularProxPago(paymentDate) == 'Hoy' ||
-                                        calcularProxPago(paymentDate) ==
+                                value: calcularProxPago(paymentDate, flutterLocalNotificationsPlugin) == 'Hoy' ||
+                                        calcularProxPago(paymentDate, flutterLocalNotificationsPlugin) ==
                                             'Mañana'
-                                    ? calcularProxPago(paymentDate)
-                                    : '${calcularProxPago(paymentDate)} dias',
+                                    ? calcularProxPago(paymentDate, flutterLocalNotificationsPlugin)
+                                    : '${calcularProxPago(paymentDate, flutterLocalNotificationsPlugin)} dias',
                                 title: "Próximo pago",
                               ),
                             ),
@@ -359,7 +355,7 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
                                   fontSize: 18,
                                   fontWeight: FontWeight.w700),
                             ),
-                            ButtonOptions(),
+                            ButtonOptions(phoneUser: phoneUser, idUser: idUser, account: account, pass: pass, profile: profileUser, pin: pinUser,),
                           ],
                         ),
                         const SizedBox(
@@ -369,7 +365,7 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
                           children: [
                             Expanded(
                               child: TodayTargetFourCell(
-                                icon: "assets/icons/dinero.png",
+                                icon: "assets/icons/account.png",
                                 value: account,
                                 title: "Cuenta:",
                               ),
@@ -383,7 +379,7 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
                           children: [
                             Expanded(
                               child: TodayTargetFourCell(
-                                icon: "assets/icons/dinero.png",
+                                icon: "assets/icons/proteger.png",
                                 value: pass,
                                 title: "Contraseña:",
                               ),
@@ -397,7 +393,11 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
                           children: [
                             Expanded(
                               child: TodayTargetFourCell(
-                                icon: "assets/icons/dinero.png",
+                                icon: genreUser == 'f'
+                                ? 'assets/icons/mujer.png'
+                                : genreUser == 'm'
+                                    ? 'assets/icons/hombre.png'
+                                    : 'assets/icons/desconocido.png',
                                 value: profileUser,
                                 title: "Usuario:",
                               ),
@@ -411,7 +411,7 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
                           children: [
                             Expanded(
                               child: TodayTargetFourCell(
-                                icon: "assets/icons/dinero.png",
+                                icon: "assets/icons/candado.png",
                                 value: pinUser,
                                 title: "Pin:",
                               ),
@@ -425,7 +425,7 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
                           children: [
                             Expanded(
                               child: TodayTargetFourCell(
-                                icon: "assets/icons/dinero.png",
+                                icon: "assets/icons/nombre.png",
                                 value: userName,
                                 title: "Nombre:",
                               ),
@@ -439,7 +439,7 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
                           children: [
                             Expanded(
                               child: TodayTargetFourCell(
-                                icon: "assets/icons/dinero.png",
+                                icon: "assets/icons/phone.png",
                                 value: phoneUser,
                                 title: "Telefono:",
                               ),
@@ -453,7 +453,7 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
                           children: [
                             Expanded(
                               child: TodayTargetFourCell(
-                                icon: "assets/icons/dinero.png",
+                                icon: "assets/icons/pago2.png",
                                 value: paymentDate,
                                 title: "Mensualidad:",
                               ),

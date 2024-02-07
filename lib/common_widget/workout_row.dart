@@ -69,7 +69,10 @@ class _WorkoutRowState extends State<WorkoutRow> {
         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
         padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
         decoration: BoxDecoration(
-            color: TColor.white,
+            gradient: LinearGradient(colors: [
+                    TColor.secondaryColor1.withOpacity(0.3),
+                    TColor.secondaryColor2.withOpacity(0.3)
+                  ]),
             borderRadius: BorderRadius.circular(20),
             boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 2)]),
         child: Row(
@@ -83,7 +86,7 @@ class _WorkoutRowState extends State<WorkoutRow> {
                     ? 'assets/icons/mujer.png'
                     : genreUser == 'm'
                         ? 'assets/icons/hombre.png'
-                        : 'assets/icons/hombre2.png'),
+                        : 'assets/icons/desconocido.png'),
               ),
 
               /*Image.asset(

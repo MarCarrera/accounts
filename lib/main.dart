@@ -1,10 +1,26 @@
 
 import 'package:fitness/view/main_tab/main_tab_view.dart';
 import 'package:flutter/material.dart';
-
 import 'common/colo_extension.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-void main() {
+// void main() {
+//   runApp(const MyApp());
+// }
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Configurar las notificaciones
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+  
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('app_icon');
+  final InitializationSettings initializationSettings =
+      InitializationSettings(android: initializationSettingsAndroid);
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  
   runApp(const MyApp());
 }
 
