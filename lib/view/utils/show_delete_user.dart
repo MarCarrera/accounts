@@ -48,7 +48,7 @@ class ShowCleanDataUser {
     );
   }
 
-  Future<void> showDeleteDialog(BuildContext context, String idUser) async {
+  Future<void> showDeleteDialog(BuildContext context, String idPago) async {
     return
         // var dialogConfirm = QuickAlert.show;
 
@@ -57,14 +57,14 @@ class ShowCleanDataUser {
       type: QuickAlertType.warning,
       title: 'Confirmación',
       titleColor: TColor.secondaryColor1,
-      text: '¿Quieres eliminar éste usuario?',
+      text: '¿Quieres eliminar éste pago?',
       textColor: TColor.secondaryColor1,
       confirmBtnText: 'Si, eliminar',
       confirmBtnColor: TColor.secondaryColor1,
       //autoCloseDuration: const Duration(seconds: 2),
       onConfirmBtnTap: () async {
         //eliminar usuario de perfil
-        await deleteProfileByUser(idUser: idUser);
+        await deletePaymentByPay(idPago: idPago);
 
         //recarga de datos desde firebase
         //uploadData(idAccount);
@@ -74,7 +74,7 @@ class ShowCleanDataUser {
         await QuickAlert.show(
           context: context,
           type: QuickAlertType.success,
-          text: 'Usuario Eliminado!',
+          text: 'Pago Eliminado!',
           textColor: TColor.secondaryColor1,
           autoCloseDuration: const Duration(seconds: 2),
           showConfirmBtn: false,

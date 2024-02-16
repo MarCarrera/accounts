@@ -54,7 +54,6 @@ dependencies:
   board_datetime_picker: #https://pub.dev/packages/board_datetime_picker
   nepali_date_picker: ^5.3.3
   popover: ^0.3.0
-  flutter_local_notifications: ^5.0.0+4
 
 dependency_overrides: 
   intl: ^0.18.1

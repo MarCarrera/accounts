@@ -31,6 +31,8 @@ final urlgetPaymentsByIdAccount = Uri.parse(
     'https://marcarrera.000webhostapp.com/api-accounts/getPaymentsByIdAccountDate');
 final urladdPayment =
     Uri.parse('https://marcarrera.000webhostapp.com/api-accounts/addPayment');
+final urldeletePayment = Uri.parse(
+    'https://marcarrera.000webhostapp.com/api-accounts/deletePaymentByIdPay');
 
 //------------------------------------------------------------------------------------------------------------
 
@@ -421,4 +423,40 @@ Future<void> deleteProfileByUser({
     print('Error de conexión: $e');
   }
 }
-   
+
+Future<void> deletePaymentByPay({
+  required String idPago,
+  /* required String nameUser,
+  required String paymentDateUser,
+  required String amount,
+  required String phoneUser,
+  required String pinUser,
+  required String statusUser,
+  required String genre,*/
+}) async {
+  // var url = 'tu_url_de_actualizacion'; // Reemplaza esto con la URL correcta de tu API
+
+  var data = {
+    'idPago': idPago,
+  };
+
+  try {
+    final response = await http.post(
+      urldeletePayment,
+      body: data,
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+
+      print('Hecho');
+      print(jsonResponse); // Puedes hacer algo con la respuesta si es necesario
+    } else {
+      // Manejar el caso en el que la solicitud no fue exitosa
+      print('Error en la solicitud HTTP: ${response.statusCode}');
+    }
+  } catch (e) {
+    // Manejar errores de conexión
+    print('Error de conexión: $e');
+  }
+}

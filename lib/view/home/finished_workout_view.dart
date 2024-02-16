@@ -7,8 +7,8 @@ import 'package:fitness/common_widget/today_target_four_cell.dart';
 import 'package:fitness/request/api_request.dart';
 import 'package:fitness/view/home/notification_view.dart';
 import 'package:fitness/view/utils/buttonOptions.dart';
+import 'package:fitness/view/utils/show_add_payment.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../common/colo_extension.dart';
@@ -17,6 +17,7 @@ import 'package:expandable_fab_menu/expandable_fab_menu.dart';
 class FinishedWorkoutView extends StatefulWidget {
   const FinishedWorkoutView(
       {super.key,
+      required this.idAccount,
       required this.userName,
       required this.idUser,
       required this.paymentDate,
@@ -28,6 +29,7 @@ class FinishedWorkoutView extends StatefulWidget {
       required this.genreUser,
       required this.account,
       required this.pass});
+  final String idAccount;
   final String userName;
   final String idUser;
   final String paymentDate;
@@ -42,6 +44,7 @@ class FinishedWorkoutView extends StatefulWidget {
 
   @override
   State<FinishedWorkoutView> createState() => _FinishedWorkoutViewState(
+      idAccount,
       userName,
       idUser,
       paymentDate,
@@ -57,17 +60,20 @@ class FinishedWorkoutView extends StatefulWidget {
 
 class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
   _FinishedWorkoutViewState(
-      this.userName,
-      this.idUser,
-      this.paymentDate,
-      this.profileUser,
-      this.amountUser,
-      this.phoneUser,
-      this.pinUser,
-      this.statusUser,
-      this.genreUser,
-      this.account,
-      this.pass);
+    this.idAccount,
+    this.userName,
+    this.idUser,
+    this.paymentDate,
+    this.profileUser,
+    this.amountUser,
+    this.phoneUser,
+    this.pinUser,
+    this.statusUser,
+    this.genreUser,
+    this.account,
+    this.pass,
+  );
+  final String idAccount;
   final String userName;
   final String idUser;
   final String paymentDate;
@@ -89,28 +95,29 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
     DateTime.now(),
   ];
   double totalPagado = 0.0;
-  
 
   String date1 = DateFormat('yyyy-MM-dd')
       .format(DateTime(DateTime.now().year, DateTime.now().month, 1));
 
   String date2 = DateFormat('yyyy-MM-dd').format(DateTime.now());
   //pagos de usuarios cuenta A-----------------------------------
+  List<String> arrayIdPayments = [];
   List<String> paymentDateUserA = [];
   List<String> arrayPaymentStatusA = [];
   List<String> arrayPaymentAmountA = [];
-  List<String> paymentDateUserB = [];
-  List<String> arrayPaymentStatusB = [];
-  List<String> arrayPaymentAmountB = [];
-  List<String> paymentDateUserC = [];
-  List<String> arrayPaymentStatusC = [];
-  List<String> arrayPaymentAmountC = [];
-  List<String> paymentDateUserD = [];
-  List<String> arrayPaymentStatusD = [];
-  List<String> arrayPaymentAmountD = [];
-  List<String> paymentDateUserE = [];
-  List<String> arrayPaymentStatusE = [];
-  List<String> arrayPaymentAmountE = [];
+
+  // List<String> paymentDateUserB = [];
+  // List<String> arrayPaymentStatusB = [];
+  // List<String> arrayPaymentAmountB = [];
+  // List<String> paymentDateUserC = [];
+  // List<String> arrayPaymentStatusC = [];
+  // List<String> arrayPaymentAmountC = [];
+  // List<String> paymentDateUserD = [];
+  // List<String> arrayPaymentStatusD = [];
+  // List<String> arrayPaymentAmountD = [];
+  // List<String> paymentDateUserE = [];
+  // List<String> arrayPaymentStatusE = [];
+  // List<String> arrayPaymentAmountE = [];
   //CONTROLADORES----------------------------------------------------------------
   final TextEditingController nameController = TextEditingController();
 
@@ -129,11 +136,14 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
   final TextEditingController idAccountUserController = TextEditingController();
 
   final TextEditingController profileUserController = TextEditingController();
-
-  
+  /////------------------------------------------------------------------------
+  ///final TextEditingController paymentDateController = TextEditingController();
+  final TextEditingController paymentDateController = TextEditingController();
+  final TextEditingController paymentStatusController = TextEditingController();
+  final TextEditingController amountPayController = TextEditingController();
 
   //calcular dias para proximo pago----------------------
-  String calcularProxPago(String paymentDay, FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) {
+  String calcularProxPago(String paymentDay) {
     //fecha actual
     DateTime currentDate = DateTime.now();
     print('currentDate::: $currentDate');
@@ -165,29 +175,12 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
     if (diasFaltantes == '0') {
       return 'Hoy';
     } else if (diasFaltantes == '1') {
-      mostrarNotificacion(flutterLocalNotificationsPlugin);
+      //mostrarNotificacion();
       return "Mañana";
     } else {
       return diasFaltantes;
     }
   }
-  Future<void> mostrarNotificacion(FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) async {
-  const AndroidNotificationDetails androidPlatformChannelSpecifics =
-      AndroidNotificationDetails(
-    'Accounts App', 'Próximo pago de mensualidad', 'Mañana se realizan nuevos pagos de perfiles de Netflix.',
-    importance: Importance.max,
-    priority: Priority.high,
-  );
-  const NotificationDetails platformChannelSpecifics =
-      NotificationDetails(android: androidPlatformChannelSpecifics);
-  await flutterLocalNotificationsPlugin.show(
-    0, // ID de la notificación
-    'Próximo pago', // Título de la notificación
-    'El pago es mañana', // Contenido de la notificación
-    platformChannelSpecifics,
-    payload: 'Próximo pago', // Datos adicionales
-  );
-}
 
   //pagos de usuario--------------------------------------------------
   Future<void> obtenerPagosUsuario(String idUser) async {
@@ -198,6 +191,7 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
         //isLoading = false;
         if (response == 'empty') {
         } else {
+          arrayIdPayments.clear();
           paymentDateUserA.clear();
           arrayPaymentStatusA.clear();
           arrayPaymentAmountA.clear();
@@ -206,6 +200,7 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
               arrayPaymentStatusA.isEmpty &&
               arrayPaymentAmountA.isEmpty) {
             for (int i = 0; i < response.length; i++) {
+              arrayIdPayments.add(response[i]['idPago'].toString());
               paymentDateUserA.add(response[i]['paymentDate'].toString());
               arrayPaymentStatusA.add(response[i]['paymentStatus'].toString());
               arrayPaymentAmountA.add(response[i]['amountPay'].toString());
@@ -275,7 +270,8 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
                                   fontSize: 18,
                                   fontWeight: FontWeight.w700),
                             ),
-                            AddButton(),
+                            AddButton(context, idUser, idAccount,
+                                paymentDateController, amountPayController),
                           ],
                         ),
                         const SizedBox(
@@ -296,11 +292,11 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
                             Expanded(
                               child: TodayTargetCell(
                                 icon: "assets/icons/pago2.png",
-                                value: calcularProxPago(paymentDate, flutterLocalNotificationsPlugin) == 'Hoy' ||
-                                        calcularProxPago(paymentDate, flutterLocalNotificationsPlugin) ==
+                                value: calcularProxPago(paymentDate) == 'Hoy' ||
+                                        calcularProxPago(paymentDate) ==
                                             'Mañana'
-                                    ? calcularProxPago(paymentDate, flutterLocalNotificationsPlugin)
-                                    : '${calcularProxPago(paymentDate, flutterLocalNotificationsPlugin)} dias',
+                                    ? calcularProxPago(paymentDate)
+                                    : '${calcularProxPago(paymentDate)} dias',
                                 title: "Próximo pago",
                               ),
                             ),
@@ -323,6 +319,7 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
                               paymentDate: paymentDateUserA[index],
                               nameUser: arrayPaymentStatusA[index],
                               paymentAmount: arrayPaymentAmountA[index],
+                              idPago: arrayIdPayments[index],
                             );
                           },
                         )
@@ -355,7 +352,14 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
                                   fontSize: 18,
                                   fontWeight: FontWeight.w700),
                             ),
-                            ButtonOptions(phoneUser: phoneUser, idUser: idUser, account: account, pass: pass, profile: profileUser, pin: pinUser,),
+                            ButtonOptions(
+                              phoneUser: phoneUser,
+                              idUser: idUser,
+                              account: account,
+                              pass: pass,
+                              profile: profileUser,
+                              pin: pinUser,
+                            ),
                           ],
                         ),
                         const SizedBox(
@@ -394,10 +398,10 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
                             Expanded(
                               child: TodayTargetFourCell(
                                 icon: genreUser == 'f'
-                                ? 'assets/icons/mujer.png'
-                                : genreUser == 'm'
-                                    ? 'assets/icons/hombre.png'
-                                    : 'assets/icons/desconocido.png',
+                                    ? 'assets/icons/mujer.png'
+                                    : genreUser == 'm'
+                                        ? 'assets/icons/hombre.png'
+                                        : 'assets/icons/desconocido.png',
                                 value: profileUser,
                                 title: "Usuario:",
                               ),
@@ -563,7 +567,13 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
     );
   }
 
-  SizedBox AddButton() {
+  SizedBox AddButton(
+    BuildContext context,
+    String idUser,
+    String idAccount,
+    TextEditingController paymentDateController,
+    TextEditingController amountPayController,
+  ) {
     return SizedBox(
       width: 30,
       height: 30,
@@ -576,7 +586,10 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
         ),
         child: MaterialButton(
             onPressed: () {
-                                
+              print('Agregando pago...');
+
+              ShowAddPayment().showAddPayment(context, idUser, idAccount,
+                  paymentDateController, amountPayController);
             },
             padding: EdgeInsets.zero,
             height: 30,

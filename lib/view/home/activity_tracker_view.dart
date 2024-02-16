@@ -66,6 +66,7 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
 
   String date2 = DateFormat('yyyy-MM-dd').format(DateTime.now());
   //pagos de usuarios cuenta -----------------------------------
+  List<String> arrayIdPayments = [];
   List<String> paymentDateAccountA = [];
   List<String> arrayNameUsersAccountA = [];
   List<String> arrayPaymentAmountA = [];
@@ -100,6 +101,7 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
         //isLoading = false;
         if (response == 'empty') {
         } else {
+          arrayIdPayments.clear();
           paymentDateAccountA.clear();
           arrayNameUsersAccountA.clear();
           arrayPaymentAmountA.clear();
@@ -110,6 +112,7 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
               arrayNameUsersAccountA.isEmpty &&
               arrayPaymentAmountA.isEmpty) {
             for (int i = 0; i < response.length; i++) {
+              arrayIdPayments.add(response[i]['idPago'].toString());
               paymentDateAccountA.add(response[i]['paymentDate'].toString());
               arrayNameUsersAccountA.add(response[i]['nameUser'].toString());
               arrayPaymentAmountA.add(response[i]['amountPay'].toString());
@@ -331,6 +334,7 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
                           paymentDate: paymentDateAccountA[index],
                           nameUser: arrayNameUsersAccountA[index],
                           paymentAmount: arrayPaymentAmountA[index],
+                          idPago: arrayIdPayments[index],
                         );
                       },
                     )
@@ -364,6 +368,7 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => FinishedWorkoutView(
+                                idAccount: idAccount,
                                 userName: arraynameA[index],
                                 idUser: arrayidUserA[index],
                                 paymentDate: arraypaymentA[index],
