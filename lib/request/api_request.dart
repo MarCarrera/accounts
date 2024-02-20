@@ -358,12 +358,12 @@ Future<void> updateDateProfileData({
 
   var data = {
     'idUser': idUser,
-    'nameUser': " ",
-    'paymentDateUser': " ",
-    'amount': " ",
-    'phoneUser': " ",
+    'nameUser': "Vacio",
+    'paymentDateUser': '1',
+    'amount': "85",
+    'phoneUser': "Vacio",
     'statusUser': "Libre",
-    'genre': " ",
+    'genre': "Vacio",
   };
 
   try {

@@ -148,8 +148,14 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
     DateTime currentDate = DateTime.now();
     print('currentDate::: $currentDate');
     //dia de pago
-    int day = int.parse(paymentDay);
-    print('day::: $day');
+    int day;
+    if (paymentDate.isEmpty || paymentDay == '') {
+      day = 19;
+    } else {
+      day = int.parse(paymentDay);
+      print('day::: $day');
+    }
+
     DateTime fechaObjetivo;
     //si el dia actual es posterior al dia de pago del mes actual, se avanza al sig mes para calcular los dias restantes
     if (currentDate.day > day) {
@@ -178,7 +184,12 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
       //mostrarNotificacion();
       return "Mañana";
     } else {
-      return diasFaltantes;
+      if (diasFaltantes == '-1') {
+        //mostrarNotificacion();
+        return "Ayer";
+      } else {
+        return diasFaltantes;
+      }
     }
   }
 
@@ -430,7 +441,7 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
                             Expanded(
                               child: TodayTargetFourCell(
                                 icon: "assets/icons/nombre.png",
-                                value: userName,
+                                value: userName == '' ? 'Vacio' : userName,
                                 title: "Nombre:",
                               ),
                             ),
@@ -444,7 +455,7 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
                             Expanded(
                               child: TodayTargetFourCell(
                                 icon: "assets/icons/phone.png",
-                                value: phoneUser,
+                                value: phoneUser == '' ? 'Vacio' : phoneUser,
                                 title: "Telefono:",
                               ),
                             ),
@@ -458,7 +469,8 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
                             Expanded(
                               child: TodayTargetFourCell(
                                 icon: "assets/icons/pago2.png",
-                                value: paymentDate,
+                                value:
+                                    paymentDate == '' ? 'Vacio' : paymentDate,
                                 title: "Mensualidad:",
                               ),
                             ),
@@ -472,7 +484,7 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
                             Expanded(
                               child: TodayTargetFourCell(
                                 icon: "assets/icons/dinero.png",
-                                value: amountUser,
+                                value: amountUser == '' ? 'Vacio' : amountUser,
                                 title: "Monto:",
                               ),
                             ),
