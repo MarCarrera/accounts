@@ -1,5 +1,6 @@
 import 'package:fitness/common/colo_extension.dart';
 import 'package:fitness/view/utils/show_delete_user.dart';
+import 'package:fitness/view/utils/show_input_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -11,7 +12,12 @@ class MenuItems extends StatefulWidget {
       required this.account,
       required this.pass,
       required this.profile,
-      required this.pin});
+      required this.pin,
+      required this.nameController,
+      required this.paymentController,
+      required this.phoneController,
+      required this.genreController,
+      required this.statusController});
   final String phoneUser;
   final String idUser;
   final String account;
@@ -19,20 +25,52 @@ class MenuItems extends StatefulWidget {
   final String profile;
   final String pin;
 
+  final TextEditingController nameController;
+  final TextEditingController paymentController;
+  final TextEditingController phoneController;
+  final TextEditingController genreController;
+  final TextEditingController statusController;
+
   @override
-  State<MenuItems> createState() =>
-      _MenuItemsState(phoneUser, idUser, account, pass, profile, pin);
+  State<MenuItems> createState() => _MenuItemsState(
+      phoneUser,
+      idUser,
+      account,
+      pass,
+      profile,
+      pin,
+      nameController,
+      paymentController,
+      phoneController,
+      genreController,
+      statusController);
 }
 
 class _MenuItemsState extends State<MenuItems> {
-  _MenuItemsState(this.phoneUser, this.idUser, this.account, this.pass,
-      this.profile, this.pin);
+  _MenuItemsState(
+      this.phoneUser,
+      this.idUser,
+      this.account,
+      this.pass,
+      this.profile,
+      this.pin,
+      this.nameController,
+      this.paymentController,
+      this.phoneController,
+      this.genreController,
+      this.statusController);
   final String phoneUser;
   final String idUser;
   final String account;
   final String pass;
   final String profile;
   final String pin;
+
+  final TextEditingController nameController;
+  final TextEditingController paymentController;
+  final TextEditingController phoneController;
+  final TextEditingController genreController;
+  final TextEditingController statusController;
 
   Future<void> shareMessageUser(String phoneUser) async {
     String phoneNumber = '+52$phoneUser';
@@ -122,45 +160,30 @@ class _MenuItemsState extends State<MenuItems> {
           ),
         ),
         Divider(color: Colors.white, height: 0.8),
-        Container(
-          height: 50,
-          width: 250,
-          color: TColor.primaryColor1,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text('Editar nombre',
-                  style: TextStyle(color: Colors.white, fontSize: 16)),
-            ],
-          ),
-        ),
-        Divider(color: Colors.white, height: 0.8),
-        Container(
-          height: 50,
-          width: 250,
-          color: TColor.primaryColor1,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text('Editar telefono',
-                  style: TextStyle(color: Colors.white, fontSize: 16)),
-            ],
-          ),
-        ),
-        Divider(color: Colors.white, height: 0.8),
-        Container(
-          height: 50,
-          width: 250,
-          color: TColor.primaryColor1,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text('Editar mensualidad',
-                  style: TextStyle(color: Colors.white, fontSize: 16)),
-            ],
+        GestureDetector(
+          onTap: () {
+            print('actualizando datos');
+            ShowInputDialog().showInputDialog(
+                context,
+                idUser,
+                nameController,
+                paymentController,
+                phoneController,
+                genreController,
+                statusController);
+          },
+          child: Container(
+            height: 50,
+            width: 250,
+            color: TColor.primaryColor1,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text('Actualizar',
+                    style: TextStyle(color: Colors.white, fontSize: 16)),
+              ],
+            ),
           ),
         ),
         Divider(color: Colors.white, height: 0.8),

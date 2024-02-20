@@ -13,6 +13,7 @@ import '../../common/colo_extension.dart';
 import 'activity_tracker_view.dart';
 import 'finished_workout_view.dart';
 import 'notification_view.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -136,6 +137,12 @@ class _HomeViewState extends State<HomeView> {
     {"title": "4pm - now", "subtitle": "900ml"},
   ];
 
+  Future<void> handleRefreshFunction() async {
+    print('Refresh_Done');
+    obtenerCuentas();
+    return await Future.delayed(Duration(seconds: 2));
+  }
+
   @override
   void initState() {
     super.initState();
@@ -172,77 +179,84 @@ class _HomeViewState extends State<HomeView> {
 
     return Scaffold(
       //backgroundColor: TColor.white,
-      body: Container(
-        decoration:
-            BoxDecoration(gradient: LinearGradient(colors: TColor.primaryG)),
-        child: Stack(alignment: Alignment.center, children: [
-          Image.asset(
-            "assets/img/bg_dots.png",
-            height: media.width * 0.4,
-            width: double.maxFinite,
-            fit: BoxFit.fitHeight,
-          ),
-          Container(
-            child: SingleChildScrollView(
-              child: SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: LiquidPullToRefresh(
+        height: 100,
+        color: TColor.secondaryColor2,
+        backgroundColor: Color(0xFFD6E4E5),
+        animSpeedFactor: 4,
+        showChildOpacityTransition: false,
+        onRefresh: handleRefreshFunction,
+        child: Container(
+            decoration: BoxDecoration(
+                gradient: LinearGradient(colors: TColor.primaryG)),
+            child: Stack(alignment: Alignment.center, children: [
+              Image.asset(
+                "assets/img/bg_dots.png",
+                height: media.width * 0.4,
+                width: double.maxFinite,
+                fit: BoxFit.fitHeight,
+              ),
+              Container(
+                child: SingleChildScrollView(
+                  child: SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                "Accounts",
-                                style: TextStyle(
-                                    color: TColor.black,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w700),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Accounts",
+                                    style: TextStyle(
+                                        color: TColor.black,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w700),
+                                  ),
+                                ],
                               ),
+                              IconButton(
+                                  onPressed: () {
+                                    print('Navegando::::');
+                                    /*Navigator.push(
+                                    context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                        const ButtonOptions(),
+                                      ),
+                                    ); */
+                                  },
+                                  icon: Image.asset(
+                                    "assets/img/notification_active.png",
+                                    width: 25,
+                                    height: 25,
+                                    fit: BoxFit.fitHeight,
+                                  ))
                             ],
                           ),
-                          IconButton(
-                              onPressed: () {
-                                print('Navegando::::');
-                                /*Navigator.push(
-                                  context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                      const ButtonOptions(),
-                                    ),
-                                  ); */
-                              },
-                              icon: Image.asset(
-                                "assets/img/notification_active.png",
-                                width: 25,
-                                height: 25,
-                                fit: BoxFit.fitHeight,
-                              ))
+
+                          const SizedBox(
+                            height: 32,
+                          ),
+                          //CARD CUENTAS------------------------------------------------------------------
+                          CardAccount(responsiveHeight),
+
+                          //CARD CUENTAS------------------------------------------------------------------
+
+                          SizedBox(
+                            height: media.width * 0.1,
+                          ),
                         ],
                       ),
-
-                      const SizedBox(
-                        height: 32,
-                      ),
-                      //CARD CUENTAS------------------------------------------------------------------
-                      CardAccount(responsiveHeight),
-
-                      //CARD CUENTAS------------------------------------------------------------------
-
-                      SizedBox(
-                        height: media.width * 0.1,
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          )
-        ]),
+            ])),
       ),
     );
   }
@@ -397,6 +411,8 @@ class _HomeViewState extends State<HomeView> {
                   arraypassword[index],
                   passController,
                 );
+
+                obtenerCuentas();
               },
               child: Column(
                 children: [

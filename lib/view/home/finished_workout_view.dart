@@ -10,6 +10,7 @@ import 'package:fitness/view/utils/buttonOptions.dart';
 import 'package:fitness/view/utils/show_add_payment.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../common/colo_extension.dart';
 import 'package:expandable_fab_menu/expandable_fab_menu.dart';
@@ -226,6 +227,12 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
     }
   }
 
+  Future<void> handleRefreshFunction() async {
+    print('Refresh_Done');
+    obtenerPagosUsuario(idUser);
+    return await Future.delayed(Duration(seconds: 2));
+  }
+
   @override
   void initState() {
     super.initState();
@@ -238,276 +245,292 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
     double responsiveWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 0),
-          child: SingleChildScrollView(
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 25),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      buildCalendarDialogButton(),
-                      DateButton(),
-                      SearchButton(),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 14,
-                  ),
-                  //CONTENEDOR DE TARJETA O CARD DE PAGOS
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 15, horizontal: 15),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(colors: [
-                        TColor.primaryColor2.withOpacity(0.3),
-                        TColor.primaryColor1.withOpacity(0.3)
-                      ]),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Column(
+      body: LiquidPullToRefresh(
+        height: 100,
+        color: TColor.secondaryColor2,
+        backgroundColor: Color(0xFFD6E4E5),
+        animSpeedFactor: 4,
+        showChildOpacityTransition: false,
+        onRefresh: handleRefreshFunction,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 0),
+            child: SingleChildScrollView(
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 25, horizontal: 25),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Usuario: $userName",
-                              style: TextStyle(
-                                  color: TColor.black,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700),
-                            ),
-                            AddButton(context, idUser, idAccount,
-                                paymentDateController, amountPayController),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TodayTargetCell(
-                                icon: "assets/icons/dinero.png",
-                                value: totalPagado.toString(),
-                                title: "Total Pagado",
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 15,
-                            ),
-                            Expanded(
-                              child: TodayTargetCell(
-                                icon: "assets/icons/pago2.png",
-                                value: calcularProxPago(paymentDate) == 'Hoy' ||
-                                        calcularProxPago(paymentDate) ==
-                                            'Mañana'
-                                    ? calcularProxPago(paymentDate)
-                                    : '${calcularProxPago(paymentDate)} dias',
-                                title: "Próximo pago",
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        //LISTA DE PAGOS-------------------------------
-                        ListView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: paymentDateUserA.length,
-                          itemBuilder: (context, index) {
-                            return SettingRow(
-                              onPressed: () {
-                                print(
-                                    'seleccionado:::: ${paymentDateUserA[index]}');
-                              },
-                              paymentDate: paymentDateUserA[index],
-                              nameUser: arrayPaymentStatusA[index],
-                              paymentAmount: arrayPaymentAmountA[index],
-                              idPago: arrayIdPayments[index],
-                            );
-                          },
-                        )
+                        buildCalendarDialogButton(),
+                        DateButton(),
+                        SearchButton(),
                       ],
                     ),
-                  ),
-                  SizedBox(
-                    height: media.width * 0.1,
-                  ),
-                  //CONTENEDOR DE DATOS DE USUARIO
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 15, horizontal: 15),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(colors: [
-                        TColor.primaryColor2.withOpacity(0.3),
-                        TColor.primaryColor1.withOpacity(0.3)
-                      ]),
-                      borderRadius: BorderRadius.circular(15),
+                    const SizedBox(
+                      height: 14,
                     ),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Datos de Perfil",
-                              style: TextStyle(
-                                  color: TColor.black,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700),
-                            ),
-                            ButtonOptions(
-                              phoneUser: phoneUser,
-                              idUser: idUser,
-                              account: account,
-                              pass: pass,
-                              profile: profileUser,
-                              pin: pinUser,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TodayTargetFourCell(
-                                icon: "assets/icons/account.png",
-                                value: account,
-                                title: "Cuenta:",
+                    //CONTENEDOR DE TARJETA O CARD DE PAGOS
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 15, horizontal: 15),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(colors: [
+                          TColor.primaryColor2.withOpacity(0.3),
+                          TColor.primaryColor1.withOpacity(0.3)
+                        ]),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Usuario: $userName",
+                                style: TextStyle(
+                                    color: TColor.black,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700),
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TodayTargetFourCell(
-                                icon: "assets/icons/proteger.png",
-                                value: pass,
-                                title: "Contraseña:",
+                              AddButton(context, idUser, idAccount,
+                                  paymentDateController, amountPayController),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TodayTargetCell(
+                                  icon: "assets/icons/dinero.png",
+                                  value: totalPagado.toString(),
+                                  title: "Total Pagado",
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TodayTargetFourCell(
-                                icon: genreUser == 'f'
-                                    ? 'assets/icons/mujer.png'
-                                    : genreUser == 'm'
-                                        ? 'assets/icons/hombre.png'
-                                        : 'assets/icons/desconocido.png',
-                                value: profileUser,
-                                title: "Usuario:",
+                              const SizedBox(
+                                width: 15,
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TodayTargetFourCell(
-                                icon: "assets/icons/candado.png",
-                                value: pinUser,
-                                title: "Pin:",
+                              Expanded(
+                                child: TodayTargetCell(
+                                  icon: "assets/icons/pago2.png",
+                                  value: calcularProxPago(paymentDate) ==
+                                              'Hoy' ||
+                                          calcularProxPago(paymentDate) ==
+                                              'Mañana'
+                                      ? calcularProxPago(paymentDate)
+                                      : '${calcularProxPago(paymentDate)} dias',
+                                  title: "Próximo pago",
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TodayTargetFourCell(
-                                icon: "assets/icons/nombre.png",
-                                value: userName == '' ? 'Vacio' : userName,
-                                title: "Nombre:",
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TodayTargetFourCell(
-                                icon: "assets/icons/phone.png",
-                                value: phoneUser == '' ? 'Vacio' : phoneUser,
-                                title: "Telefono:",
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TodayTargetFourCell(
-                                icon: "assets/icons/pago2.png",
-                                value:
-                                    paymentDate == '' ? 'Vacio' : paymentDate,
-                                title: "Mensualidad:",
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 15,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TodayTargetFourCell(
-                                icon: "assets/icons/dinero.png",
-                                value: amountUser == '' ? 'Vacio' : amountUser,
-                                title: "Monto:",
-                              ),
-                            ),
-                          ],
-                        ),
-                        /*OptionsUser(
-                            context,
-                            responsiveWidth,
-                            idUser,
-                            userName,
-                            paymentDate,
-                            amountUser,
-                            phoneUser,
-                            pinUser,
-                            statusUser,
-                            genreUser),*/
-                      ],
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          //LISTA DE PAGOS-------------------------------
+                          ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: paymentDateUserA.length,
+                            itemBuilder: (context, index) {
+                              return SettingRow(
+                                onPressed: () {
+                                  print(
+                                      'seleccionado:::: ${paymentDateUserA[index]}');
+                                },
+                                paymentDate: paymentDateUserA[index],
+                                nameUser: arrayPaymentStatusA[index],
+                                paymentAmount: arrayPaymentAmountA[index],
+                                idPago: arrayIdPayments[index],
+                              );
+                            },
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: media.width * 0.1,
-                  ),
-                ],
+                    SizedBox(
+                      height: media.width * 0.1,
+                    ),
+                    //CONTENEDOR DE DATOS DE USUARIO
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 15, horizontal: 15),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(colors: [
+                          TColor.primaryColor2.withOpacity(0.3),
+                          TColor.primaryColor1.withOpacity(0.3)
+                        ]),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Datos de Perfil",
+                                style: TextStyle(
+                                    color: TColor.black,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700),
+                              ),
+                              ButtonOptions(
+                                phoneUser: phoneUser,
+                                idUser: idUser,
+                                account: account,
+                                pass: pass,
+                                profile: profileUser,
+                                pin: pinUser,
+                                nameController: nameController,
+                                paymentController: paymentController,
+                                phoneController: phoneController,
+                                genreController: genreController,
+                                statusController: statusController,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TodayTargetFourCell(
+                                  icon: "assets/icons/account.png",
+                                  value: account,
+                                  title: "Cuenta:",
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TodayTargetFourCell(
+                                  icon: "assets/icons/proteger.png",
+                                  value: pass,
+                                  title: "Contraseña:",
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TodayTargetFourCell(
+                                  icon: genreUser == 'f'
+                                      ? 'assets/icons/mujer.png'
+                                      : genreUser == 'm'
+                                          ? 'assets/icons/hombre.png'
+                                          : 'assets/icons/desconocido.png',
+                                  value: profileUser,
+                                  title: "Usuario:",
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TodayTargetFourCell(
+                                  icon: "assets/icons/candado.png",
+                                  value: pinUser,
+                                  title: "Pin:",
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TodayTargetFourCell(
+                                  icon: "assets/icons/nombre.png",
+                                  value: userName == '' ? 'Vacio' : userName,
+                                  title: "Nombre:",
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TodayTargetFourCell(
+                                  icon: "assets/icons/phone.png",
+                                  value: phoneUser == '' ? 'Vacio' : phoneUser,
+                                  title: "Telefono:",
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TodayTargetFourCell(
+                                  icon: "assets/icons/pago2.png",
+                                  value:
+                                      paymentDate == '' ? 'Vacio' : paymentDate,
+                                  title: "Mensualidad:",
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TodayTargetFourCell(
+                                  icon: "assets/icons/dinero.png",
+                                  value:
+                                      amountUser == '' ? 'Vacio' : amountUser,
+                                  title: "Monto:",
+                                ),
+                              ),
+                            ],
+                          ),
+                          /*OptionsUser(
+                              context,
+                              responsiveWidth,
+                              idUser,
+                              userName,
+                              paymentDate,
+                              amountUser,
+                              phoneUser,
+                              pinUser,
+                              statusUser,
+                              genreUser),*/
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: media.width * 0.1,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

@@ -10,17 +10,13 @@ final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 class ShowInputDialog {
   Future<void> showInputDialog(
     BuildContext context,
-    double responsiveWidth,
+    //double responsiveWidth,
     String idUser,
     TextEditingController nameController,
     TextEditingController paymentController,
     TextEditingController phoneController,
-    TextEditingController pinController,
     TextEditingController genreController,
     TextEditingController statusController,
-    TextEditingController amountController,
-    TextEditingController idAccountUserController,
-    TextEditingController profileUserController,
   ) async {
     return await showDialog(
         context: context,
@@ -43,16 +39,6 @@ class ShowInputDialog {
                     children: [
                       Divider(height: 30, color: TColor.secondaryColor1),
                       TextForm(
-                          controller: idAccountUserController,
-                          text: 'Cuenta',
-                          icon: Icons.person_2),
-                      const SizedBox(height: 10),
-                      TextForm(
-                          controller: profileUserController,
-                          text: 'Perfil',
-                          icon: Icons.person_2),
-                      const SizedBox(height: 10),
-                      TextForm(
                           controller: nameController,
                           text: 'Nombre',
                           icon: Icons.person_2),
@@ -63,19 +49,9 @@ class ShowInputDialog {
                           icon: Icons.calendar_month),
                       const SizedBox(height: 10),
                       TextForm(
-                          controller: amountController,
-                          text: 'Monto',
-                          icon: Icons.monetization_on),
-                      const SizedBox(height: 10),
-                      TextForm(
                           controller: phoneController,
                           text: 'Telefono',
                           icon: Icons.phone_android),
-                      const SizedBox(height: 10),
-                      TextForm(
-                          controller: pinController,
-                          text: 'Pin',
-                          icon: Icons.password),
                       const SizedBox(height: 10),
                       TextForm(
                           controller: genreController,
@@ -115,7 +91,7 @@ class ShowInputDialog {
                             type: QuickAlertType.info,
                             title: 'Confirmar usuario',
                             text:
-                                'Inicio de Mensualidad: ${paymentController.text} \nTeléfono: ${phoneController.text} \nCuentaNetflix00A@gmail.com \nUsuario: A \nPin: ${pinController.text} ',
+                                'Nombre: ${nameController.text} \nInicio de Mensualidad: ${paymentController.text} \nTeléfono: ${phoneController.text} \nGénero: ${genreController.text} ',
                             textColor: TColor.secondaryColor1,
                             titleColor: TColor.secondaryColor1,
                             confirmBtnText: 'Confirmar',
@@ -124,15 +100,12 @@ class ShowInputDialog {
                               print('datos guardados');
                               //request para guardar los datos de usuario en Firebase
                               await addProfileData(
-                                  profileUser: profileUserController.text,
                                   nameUser: nameController.text,
                                   paymentDateUser: paymentController.text,
-                                  amount: amountController.text,
                                   phoneUser: phoneController.text,
-                                  pinUser: pinController.text,
                                   statusUser: statusController.text,
-                                  idAccountUser: idAccountUserController.text,
-                                  genre: genreController.text);
+                                  genre: genreController.text,
+                                  idUser: idUser);
                               //limpiar controladores de data usuario
                               //cleanDataUser();
 

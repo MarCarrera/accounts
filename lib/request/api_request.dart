@@ -254,33 +254,26 @@ Future<void> addPaymentProfileData(
 }
 
 Future<void> addProfileData({
-  required String profileUser,
+  required String idUser,
   required String nameUser,
   required String paymentDateUser,
-  required String amount,
   required String phoneUser,
-  required String pinUser,
   required String statusUser,
-  required String idAccountUser,
   required String genre,
 }) async {
   // var url = 'tu_url_de_actualizacion'; // Reemplaza esto con la URL correcta de tu API
 
   var data = {
-    'profileUser': profileUser,
     'nameUser': nameUser,
     'paymentDateUser': paymentDateUser,
-    'amount': amount,
     'phoneUser': phoneUser,
-    'pinUser': pinUser,
     'statusUser': statusUser,
-    'idAccountUser': idAccountUser,
     'genre': genre,
   };
 
   try {
     final response = await http.post(
-      urladdProfile,
+      urlupdateProfileByIdUser,
       body: data,
     );
 

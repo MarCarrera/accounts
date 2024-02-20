@@ -6,7 +6,19 @@ import 'package:flutter/material.dart';
 import 'package:popover/popover.dart';
 
 class ButtonOptions extends StatefulWidget {
-  const ButtonOptions({super.key, required this.phoneUser, required this.idUser, required this.account, required this.pass, required this.profile, required this.pin});
+  const ButtonOptions(
+      {super.key,
+      required this.phoneUser,
+      required this.idUser,
+      required this.account,
+      required this.pass,
+      required this.profile,
+      required this.pin,
+      required this.nameController,
+      required this.paymentController,
+      required this.phoneController,
+      required this.genreController,
+      required this.statusController});
   final String phoneUser;
   final String idUser;
   final String account;
@@ -14,28 +26,73 @@ class ButtonOptions extends StatefulWidget {
   final String profile;
   final String pin;
 
+  final TextEditingController nameController;
+  final TextEditingController paymentController;
+  final TextEditingController phoneController;
+  final TextEditingController genreController;
+  final TextEditingController statusController;
+
   @override
-  State<ButtonOptions> createState() => _ButtonOptionsState(phoneUser, idUser, account, pass, profile, pin);
+  State<ButtonOptions> createState() => _ButtonOptionsState(
+      phoneUser,
+      idUser,
+      account,
+      pass,
+      profile,
+      pin,
+      nameController,
+      paymentController,
+      phoneController,
+      genreController,
+      statusController);
 }
 
 class _ButtonOptionsState extends State<ButtonOptions> {
-  _ButtonOptionsState(this.phoneUser, this.idUser, this.account, this.pass, this.profile, this.pin);
+  _ButtonOptionsState(
+      this.phoneUser,
+      this.idUser,
+      this.account,
+      this.pass,
+      this.profile,
+      this.pin,
+      this.nameController,
+      this.paymentController,
+      this.phoneController,
+      this.genreController,
+      this.statusController);
   final String phoneUser;
   final String idUser;
   final String account;
   final String pass;
   final String profile;
   final String pin;
+
+  final TextEditingController nameController;
+  final TextEditingController paymentController;
+  final TextEditingController phoneController;
+  final TextEditingController genreController;
+  final TextEditingController statusController;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => showPopover(
-        context: context,
-        bodyBuilder: (context) => MenuItems(phoneUser: phoneUser, idUser: idUser, account: account, pass: pass, profile: profile, pin: pin,),
-        width: 250,
-        height: 407
-    ),
-    child: const Icon(Icons.more_vert));
+        onTap: () => showPopover(
+            context: context,
+            bodyBuilder: (context) => MenuItems(
+                  phoneUser: phoneUser,
+                  idUser: idUser,
+                  account: account,
+                  pass: pass,
+                  profile: profile,
+                  pin: pin,
+                  nameController: nameController,
+                  paymentController: paymentController,
+                  phoneController: phoneController,
+                  genreController: genreController,
+                  statusController: statusController,
+                ),
+            width: 250,
+            height: 407),
+        child: const Icon(Icons.more_vert));
   }
 }

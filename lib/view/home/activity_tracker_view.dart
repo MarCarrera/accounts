@@ -9,6 +9,7 @@ import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 import '../../common/colo_extension.dart';
 import '../../common_widget/latest_activity_row.dart';
@@ -163,6 +164,13 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
     }
   }
 
+  Future<void> handleRefreshFunction() async {
+    print('Refresh_Done');
+    obtenerPagosCuenta(idAccount, date1, date2);
+    obtenerPerfilesCuenta(idAccount);
+    return await Future.delayed(Duration(seconds: 2));
+  }
+
   //------------------------------------------------------
   @override
   void initState() {
@@ -226,179 +234,188 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
         ],
       ),
       backgroundColor: TColor.white,
-      body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 25),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  buildCalendarDialogButton(),
-                  DateButton(),
-                  SearchButton(),
-                ],
-              ),
-              SizedBox(
-                height: 14,
-              ),
-              //CONTENEDOR DE TARJETA O CARD DE PAGOS
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [
-                    TColor.primaryColor2.withOpacity(0.3),
-                    TColor.primaryColor1.withOpacity(0.3)
-                  ]),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Column(
+      body: LiquidPullToRefresh(
+        height: 100,
+        color: TColor.secondaryColor2,
+        backgroundColor: Color(0xFFD6E4E5),
+        animSpeedFactor: 4,
+        showChildOpacityTransition: false,
+        onRefresh: handleRefreshFunction,
+        child: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 25),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Cuenta: $accountName",
-                          style: TextStyle(
-                              color: TColor.black,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TodayTargetCell(
-                            icon: "assets/icons/dinero.png",
-                            value: totalPagado.toString(),
-                            title: "Total Pagado",
-                          ),
-                        ),
-                        SizedBox(
-                          width: 15,
-                        ),
-                        Expanded(
-                          child: TodayTargetCell(
-                            icon: "assets/icons/money.png",
-                            value: ganancia < 0 ? '00.0' : ganancia.toString(),
-                            title: "Ganancia",
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TodayTargetTwoCell(
-                            icon: "assets/icons/fondos.png",
-                            value1: liquidar.toString(),
-                            title1: "Pendiente",
-                            value2: retiro.toString(),
-                            title2: "Liquidado",
-                          ),
-                        ),
-                        SizedBox(
-                          width: 15,
-                        ),
-                        Expanded(
-                          child: TodayTargetTwoCell(
-                            icon: "assets/icons/bank.png",
-                            value1: envio < 0 ? '00.0' : envio.toString(),
-                            title1: "Pendiente",
-                            value2: enviado.toString(),
-                            title2: "Enviado",
-                          ),
-                        ),
-                      ],
-                    ),
-                    //LISTA DE PAGOS-------------------------------
-                    ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: paymentDateAccountA.length,
-                      itemBuilder: (context, index) {
-                        return SettingRow(
-                          onPressed: () {
-                            print(
-                                'seleccionado:::: ${paymentDateAccountA[index]}');
-                          },
-                          paymentDate: paymentDateAccountA[index],
-                          nameUser: arrayNameUsersAccountA[index],
-                          paymentAmount: arrayPaymentAmountA[index],
-                          idPago: arrayIdPayments[index],
-                        );
-                      },
-                    )
+                    buildCalendarDialogButton(),
+                    DateButton(),
+                    SearchButton(),
                   ],
                 ),
-              ),
-              SizedBox(
-                height: media.width * 0.05,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Usuarios de la cuenta",
-                    style: TextStyle(
-                        color: TColor.black,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700),
+                SizedBox(
+                  height: 14,
+                ),
+                //CONTENEDOR DE TARJETA O CARD DE PAGOS
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(colors: [
+                      TColor.primaryColor2.withOpacity(0.3),
+                      TColor.primaryColor1.withOpacity(0.3)
+                    ]),
+                    borderRadius: BorderRadius.circular(15),
                   ),
-                ],
-              ),
-              ListView.builder(
-                  padding: EdgeInsets.zero,
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: arrayidUserA.length,
-                  itemBuilder: (context, index) {
-                    return InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => FinishedWorkoutView(
-                                idAccount: idAccount.toString(),
-                                userName: arraynameA[index].toString(),
-                                idUser: arrayidUserA[index].toString(),
-                                paymentDate: arraypaymentA[index].toString(),
-                                profileUser: arrayprofileA[index].toString(),
-                                amountUser: arrayamountA[index].toString(),
-                                phoneUser: arrayphoneA[index].toString(),
-                                pinUser: arraypinA[index].toString(),
-                                statusUser: arraystatusA[index].toString(),
-                                genreUser: arrayGenresA[index].toString(),
-                                account: accountName.toString(),
-                                pass: pass.toString(),
-                              ),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Cuenta: $accountName",
+                            style: TextStyle(
+                                color: TColor.black,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TodayTargetCell(
+                              icon: "assets/icons/dinero.png",
+                              value: totalPagado.toString(),
+                              title: "Total Pagado",
                             ),
+                          ),
+                          SizedBox(
+                            width: 15,
+                          ),
+                          Expanded(
+                            child: TodayTargetCell(
+                              icon: "assets/icons/money.png",
+                              value:
+                                  ganancia < 0 ? '00.0' : ganancia.toString(),
+                              title: "Ganancia",
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TodayTargetTwoCell(
+                              icon: "assets/icons/fondos.png",
+                              value1: liquidar.toString(),
+                              title1: "Pendiente",
+                              value2: retiro.toString(),
+                              title2: "Liquidado",
+                            ),
+                          ),
+                          SizedBox(
+                            width: 15,
+                          ),
+                          Expanded(
+                            child: TodayTargetTwoCell(
+                              icon: "assets/icons/bank.png",
+                              value1: envio < 0 ? '00.0' : envio.toString(),
+                              title1: "Pendiente",
+                              value2: enviado.toString(),
+                              title2: "Enviado",
+                            ),
+                          ),
+                        ],
+                      ),
+                      //LISTA DE PAGOS-------------------------------
+                      ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: paymentDateAccountA.length,
+                        itemBuilder: (context, index) {
+                          return SettingRow(
+                            onPressed: () {
+                              print(
+                                  'seleccionado:::: ${paymentDateAccountA[index]}');
+                            },
+                            paymentDate: paymentDateAccountA[index],
+                            nameUser: arrayNameUsersAccountA[index],
+                            paymentAmount: arrayPaymentAmountA[index],
+                            idPago: arrayIdPayments[index],
                           );
                         },
-                        child: WorkoutRow(
-                            idUser: arrayidUserA[index],
-                            profileUser: arrayprofileA[index],
-                            nameUser: arraynameA[index],
-                            paymentUser: arraypaymentA[index],
-                            amountUser: arrayamountA[index],
-                            phoneUser: arrayphoneA[index],
-                            pinUser: arraypinA[index],
-                            statusUser: arraystatusA[index],
-                            genreUser: arrayGenresA[index]));
-                  }),
-              SizedBox(
-                height: media.width * 0.1,
-              ),
-            ],
+                      )
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: media.width * 0.05,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Usuarios de la cuenta",
+                      style: TextStyle(
+                          color: TColor.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                ),
+                ListView.builder(
+                    padding: EdgeInsets.zero,
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: arrayidUserA.length,
+                    itemBuilder: (context, index) {
+                      return InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FinishedWorkoutView(
+                                  idAccount: idAccount.toString(),
+                                  userName: arraynameA[index].toString(),
+                                  idUser: arrayidUserA[index].toString(),
+                                  paymentDate: arraypaymentA[index].toString(),
+                                  profileUser: arrayprofileA[index].toString(),
+                                  amountUser: arrayamountA[index].toString(),
+                                  phoneUser: arrayphoneA[index].toString(),
+                                  pinUser: arraypinA[index].toString(),
+                                  statusUser: arraystatusA[index].toString(),
+                                  genreUser: arrayGenresA[index].toString(),
+                                  account: accountName.toString(),
+                                  pass: pass.toString(),
+                                ),
+                              ),
+                            );
+                          },
+                          child: WorkoutRow(
+                              idUser: arrayidUserA[index],
+                              profileUser: arrayprofileA[index],
+                              nameUser: arraynameA[index],
+                              paymentUser: arraypaymentA[index],
+                              amountUser: arrayamountA[index],
+                              phoneUser: arrayphoneA[index],
+                              pinUser: arraypinA[index],
+                              statusUser: arraystatusA[index],
+                              genreUser: arrayGenresA[index]));
+                    }),
+                SizedBox(
+                  height: media.width * 0.1,
+                ),
+              ],
+            ),
           ),
         ),
       ),
