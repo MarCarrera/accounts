@@ -6,13 +6,12 @@ import 'package:fitness/common_widget/workout_row.dart';
 import 'package:fitness/request/api_request.dart';
 import 'package:fitness/view/home/finished_workout_view.dart';
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
+import 'package:fitness/view/utils/show_input_dialog.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
-
 import '../../common/colo_extension.dart';
-import '../../common_widget/latest_activity_row.dart';
 import '../../common_widget/today_target_cell.dart';
 
 class ActivityTrackerView extends StatefulWidget {
@@ -37,6 +36,9 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
   final String idAccount;
   final String accountName;
   final String pass;
+
+  TextEditingController reasonController = TextEditingController();
+  TextEditingController amountController = TextEditingController();
 
   int touchedIndex = -1;
 
@@ -313,13 +315,21 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
                       ),
                       Row(
                         children: [
-                          Expanded(
-                            child: TodayTargetTwoCell(
-                              icon: "assets/icons/fondos.png",
-                              value1: liquidar.toString(),
-                              title1: "Pendiente",
-                              value2: retiro.toString(),
-                              title2: "Liquidado",
+                          GestureDetector(
+                            onTap: () {
+                              print('Agregando transaccion...');
+                              ShowInputDialog().showAddTransaction(
+                                  context, reasonController, amountController);
+                            },
+                            child: Expanded(
+                              child: TodayTargetTwoCell(
+                                icon: "assets/icons/fondos.png",
+                                value1:
+                                    liquidar < 0 ? '00.0' : liquidar.toString(),
+                                title1: "Pendiente",
+                                value2: retiro.toString(),
+                                title2: "Liquidado",
+                              ),
                             ),
                           ),
                           SizedBox(

@@ -35,6 +35,8 @@ final urldeletePayment = Uri.parse(
     'https://marcarrera.000webhostapp.com/api-accounts/deletePaymentByIdPay');
 final updatePinByIdUser = Uri.parse(
     'https://marcarrera.000webhostapp.com/api-accounts/updatePinByIdUser');
+final addTransaction = Uri.parse(
+    'https://marcarrera.000webhostapp.com/api-accounts/addTransaction');
 
 //------------------------------------------------------------------------------------------------------------
 
@@ -453,6 +455,44 @@ Future<void> deletePaymentByPay({
   try {
     final response = await http.post(
       urldeletePayment,
+      body: data,
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+
+      print('Hecho');
+      print(jsonResponse); // Puedes hacer algo con la respuesta si es necesario
+    } else {
+      // Manejar el caso en el que la solicitud no fue exitosa
+      print('Error en la solicitud HTTP: ${response.statusCode}');
+    }
+  } catch (e) {
+    // Manejar errores de conexión
+    print('Error de conexión: $e');
+  }
+}
+
+Future<void> addNewTransaction({
+  required String reason,
+  required String transaction,
+  required String date,
+  required String amount,
+  required String status,
+}) async {
+  // var url = 'tu_url_de_actualizacion'; // Reemplaza esto con la URL correcta de tu API
+
+  var data = {
+    'reason': reason,
+    'transaction': transaction,
+    'date': date,
+    'amount': amount,
+    'status': status,
+  };
+
+  try {
+    final response = await http.post(
+      addTransaction,
       body: data,
     );
 
