@@ -133,6 +133,101 @@ class ShowInputDialog {
         });
   }
 
+  Future<void> showEditPin(
+    BuildContext context,
+    //double responsiveWidth,
+    String idUser,
+    TextEditingController pinController,
+  ) async {
+    return await showDialog(
+        context: context,
+        builder: (context) {
+          //bool isChecked = false;
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              title: Text(
+                "Actualizar pin",
+                style: TextStyle(
+                    fontSize: 24,
+                    color: TColor.secondaryColor1,
+                    fontWeight: FontWeight.w700),
+              ),
+              content: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Divider(height: 30, color: TColor.secondaryColor1),
+                      TextForm(
+                          controller: pinController,
+                          text: 'Pin',
+                          icon: Icons.person_2),
+                      const SizedBox(height: 10),
+                    ],
+                  ),
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                    onPressed: () {
+                      // if (_formKey.currentState!.validate()) {
+                      Navigator.of(context).pop();
+                      //}
+                    },
+                    child: Text(
+                      "Cancelar",
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: TColor.secondaryColor1,
+                          fontWeight: FontWeight.w700),
+                    )),
+                TextButton(
+                    onPressed: () async {},
+                    child: GestureDetector(
+                      onTap: () async {
+                        if (_formKey.currentState!.validate()) {
+                          await QuickAlert.show(
+                            context: context,
+                            type: QuickAlertType.info,
+                            title: 'Confirmar pin',
+                            text: 'Pin: ${pinController.text}',
+                            textColor: TColor.secondaryColor1,
+                            titleColor: TColor.secondaryColor1,
+                            confirmBtnText: 'Confirmar',
+                            confirmBtnColor: TColor.secondaryColor1,
+                            onConfirmBtnTap: () async {
+                              print('datos guardados');
+                              //request para guardar los datos de usuario en Firebase
+                              await updatePinByUser(
+                                  idUser: idUser, pinUser: pinController.text);
+                              //limpiar controladores de data usuario
+                              //cleanDataUser();
+
+                              //actualiza datos de Firebase en vista
+                              //uploadData(idAccount);
+                              Navigator.of(context).pop();
+                            },
+                          );
+                          leadingImage:
+                          'assets/info.gif';
+                          Navigator.of(context).pop();
+                        }
+                      },
+                      child: Text(
+                        "Actualizar",
+                        style: TextStyle(
+                            fontSize: 20,
+                            color: TColor.secondaryColor1,
+                            fontWeight: FontWeight.w700),
+                      ),
+                    ))
+              ],
+            );
+          });
+        });
+  }
+
   /*cleanDataUser() {
     nameController.clear();
     paymentController.clear();

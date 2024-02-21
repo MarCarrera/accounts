@@ -18,7 +18,8 @@ class ButtonOptions extends StatefulWidget {
       required this.paymentController,
       required this.phoneController,
       required this.genreController,
-      required this.statusController});
+      required this.statusController,
+      required this.pinController});
   final String phoneUser;
   final String idUser;
   final String account;
@@ -31,6 +32,7 @@ class ButtonOptions extends StatefulWidget {
   final TextEditingController phoneController;
   final TextEditingController genreController;
   final TextEditingController statusController;
+  final TextEditingController pinController;
 
   @override
   State<ButtonOptions> createState() => _ButtonOptionsState(
@@ -44,7 +46,8 @@ class ButtonOptions extends StatefulWidget {
       paymentController,
       phoneController,
       genreController,
-      statusController);
+      statusController,
+      pinController);
 }
 
 class _ButtonOptionsState extends State<ButtonOptions> {
@@ -59,7 +62,8 @@ class _ButtonOptionsState extends State<ButtonOptions> {
       this.paymentController,
       this.phoneController,
       this.genreController,
-      this.statusController);
+      this.statusController,
+      this.pinController);
   final String phoneUser;
   final String idUser;
   final String account;
@@ -72,6 +76,7 @@ class _ButtonOptionsState extends State<ButtonOptions> {
   final TextEditingController phoneController;
   final TextEditingController genreController;
   final TextEditingController statusController;
+  final TextEditingController pinController;
 
   @override
   Widget build(BuildContext context) {
@@ -90,9 +95,10 @@ class _ButtonOptionsState extends State<ButtonOptions> {
                   phoneController: phoneController,
                   genreController: genreController,
                   statusController: statusController,
+                  pinController: pinController,
                 ),
             width: 250,
-            height: 407),
+            height: 305.4),
         child: const Icon(Icons.more_vert));
   }
 }

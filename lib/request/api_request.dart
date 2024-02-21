@@ -33,19 +33,10 @@ final urladdPayment =
     Uri.parse('https://marcarrera.000webhostapp.com/api-accounts/addPayment');
 final urldeletePayment = Uri.parse(
     'https://marcarrera.000webhostapp.com/api-accounts/deletePaymentByIdPay');
+final updatePinByIdUser = Uri.parse(
+    'https://marcarrera.000webhostapp.com/api-accounts/updatePinByIdUser');
 
 //------------------------------------------------------------------------------------------------------------
-
-/*final urlAccounts = Uri.parse(
-    'https://marcarrera.000webhostapp.com/accounts-app-flutter/request_accounts.php');
-final urlProfiles = Uri.parse(
-    'https://marcarrera.000webhostapp.com/accounts-app-flutter/request_profiles.php');
-final urlProfilesByAccount = Uri.parse(
-    'https://marcarrera.000webhostapp.com/accounts-app-flutter/request_accounts.php?idAccountUser=');
-final urlPaymentsProfiles = Uri.parse(
-    'https://marcarrera.000webhostapp.com/accounts-app-flutter/request_paymentsProfiles.php');
-final urlPaymentsProfilesByUser = Uri.parse(
-    'https://marcarrera.000webhostapp.com/accounts-app-flutter/request_paymentsProfiles_by_user.php?idUser=1');*/
 
 Future<dynamic> getAccounts() async {
   /*var data = {
@@ -340,13 +331,6 @@ Future<void> updateProfileData({
 
 Future<void> updateDateProfileData({
   required String idUser,
-  /* required String nameUser,
-  required String paymentDateUser,
-  required String amount,
-  required String phoneUser,
-  required String pinUser,
-  required String statusUser,
-  required String genre,*/
 }) async {
   // var url = 'tu_url_de_actualizacion'; // Reemplaza esto con la URL correcta de tu API
 
@@ -363,6 +347,38 @@ Future<void> updateDateProfileData({
   try {
     final response = await http.post(
       urlupdateDataProfileByIdUser,
+      body: data,
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+
+      print('Hecho');
+      print(jsonResponse); // Puedes hacer algo con la respuesta si es necesario
+    } else {
+      // Manejar el caso en el que la solicitud no fue exitosa
+      print('Error en la solicitud HTTP: ${response.statusCode}');
+    }
+  } catch (e) {
+    // Manejar errores de conexión
+    print('Error de conexión: $e');
+  }
+}
+
+Future<void> updatePinByUser({
+  required String idUser,
+  required String pinUser,
+}) async {
+  // var url = 'tu_url_de_actualizacion'; // Reemplaza esto con la URL correcta de tu API
+
+  var data = {
+    'idUser': idUser,
+    'pinUser': pinUser,
+  };
+
+  try {
+    final response = await http.post(
+      updatePinByIdUser,
       body: data,
     );
 

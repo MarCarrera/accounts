@@ -391,6 +391,7 @@ class _FinishedWorkoutViewState extends State<FinishedWorkoutView> {
                                 phoneController: phoneController,
                                 genreController: genreController,
                                 statusController: statusController,
+                                pinController: pinController,
                               ),
                             ],
                           ),

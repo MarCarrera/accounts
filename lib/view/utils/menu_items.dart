@@ -1,5 +1,6 @@
 import 'package:fitness/common/colo_extension.dart';
 import 'package:fitness/view/utils/show_delete_user.dart';
+import 'package:fitness/view/utils/show_editing_account.dart';
 import 'package:fitness/view/utils/show_input_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -17,7 +18,8 @@ class MenuItems extends StatefulWidget {
       required this.paymentController,
       required this.phoneController,
       required this.genreController,
-      required this.statusController});
+      required this.statusController,
+      required this.pinController});
   final String phoneUser;
   final String idUser;
   final String account;
@@ -30,8 +32,10 @@ class MenuItems extends StatefulWidget {
   final TextEditingController phoneController;
   final TextEditingController genreController;
   final TextEditingController statusController;
+  final TextEditingController pinController;
 
   @override
+  // ignore: no_logic_in_create_state
   State<MenuItems> createState() => _MenuItemsState(
       phoneUser,
       idUser,
@@ -43,7 +47,8 @@ class MenuItems extends StatefulWidget {
       paymentController,
       phoneController,
       genreController,
-      statusController);
+      statusController,
+      pinController);
 }
 
 class _MenuItemsState extends State<MenuItems> {
@@ -58,7 +63,8 @@ class _MenuItemsState extends State<MenuItems> {
       this.paymentController,
       this.phoneController,
       this.genreController,
-      this.statusController);
+      this.statusController,
+      this.pinController);
   final String phoneUser;
   final String idUser;
   final String account;
@@ -71,6 +77,7 @@ class _MenuItemsState extends State<MenuItems> {
   final TextEditingController phoneController;
   final TextEditingController genreController;
   final TextEditingController statusController;
+  final TextEditingController pinController;
 
   Future<void> shareMessageUser(String phoneUser) async {
     String phoneNumber = '+52$phoneUser';
@@ -187,17 +194,23 @@ class _MenuItemsState extends State<MenuItems> {
           ),
         ),
         Divider(color: Colors.white, height: 0.8),
-        Container(
-          height: 50,
-          width: 250,
-          color: TColor.primaryColor1,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text('Editar pin',
-                  style: TextStyle(color: Colors.white, fontSize: 16)),
-            ],
+        GestureDetector(
+          onTap: () {
+            print("editar pin");
+            ShowInputDialog().showEditPin(context, idUser, pinController);
+          },
+          child: Container(
+            height: 50,
+            width: 250,
+            color: TColor.primaryColor1,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text('Editar pin',
+                    style: TextStyle(color: Colors.white, fontSize: 16)),
+              ],
+            ),
           ),
         ),
         Divider(color: Colors.white, height: 0.8),
