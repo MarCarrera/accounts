@@ -264,6 +264,7 @@ Future<void> addProfileData({
   // var url = 'tu_url_de_actualizacion'; // Reemplaza esto con la URL correcta de tu API
 
   var data = {
+    'idUser': idUser,
     'nameUser': nameUser,
     'paymentDateUser': paymentDateUser,
     'phoneUser': phoneUser,
