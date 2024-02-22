@@ -228,6 +228,110 @@ class ShowInputDialog {
         });
   }
 
+  Future<void> showAddTransaction(
+    BuildContext context,
+    String idAccount,
+    TextEditingController reasonController,
+    TextEditingController amountController,
+  ) async {
+    return await showDialog(
+        context: context,
+        builder: (context) {
+          //bool isChecked = false;
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              title: Text(
+                "Agregar transaccion",
+                style: TextStyle(
+                    fontSize: 24,
+                    color: TColor.secondaryColor1,
+                    fontWeight: FontWeight.w700),
+              ),
+              content: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Divider(height: 30, color: TColor.secondaryColor1),
+                      TextForm(
+                          controller: reasonController,
+                          text: 'Razón',
+                          icon: Icons.person_2),
+                      const SizedBox(height: 10),
+                      TextForm(
+                          controller: amountController,
+                          text: 'Monto',
+                          icon: Icons.phone_android),
+                      const SizedBox(height: 10),
+                    ],
+                  ),
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                    onPressed: () {
+                      // if (_formKey.currentState!.validate()) {
+                      Navigator.of(context).pop();
+                      //}
+                    },
+                    child: Text(
+                      "Cancelar",
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: TColor.secondaryColor1,
+                          fontWeight: FontWeight.w700),
+                    )),
+                TextButton(
+                    onPressed: () async {},
+                    child: GestureDetector(
+                      onTap: () async {
+                        if (_formKey.currentState!.validate()) {
+                          await QuickAlert.show(
+                            context: context,
+                            type: QuickAlertType.info,
+                            title: 'Confirmar movimiento',
+                            text:
+                                'Razon: ${reasonController.text} \nMonto: ${amountController.text}',
+                            textColor: TColor.secondaryColor1,
+                            titleColor: TColor.secondaryColor1,
+                            confirmBtnText: 'Confirmar',
+                            confirmBtnColor: TColor.secondaryColor1,
+                            onConfirmBtnTap: () async {
+                              print('datos guardados');
+                              //request para guardar los datos de usuario en Firebase
+                              await addNewTransaction(
+                                reason: reasonController.text,
+                                amount: amountController.text,
+                                idAccount: idAccount,
+                              );
+                              //limpiar controladores de data usuario
+                              //cleanDataUser();
+
+                              //actualiza datos de Firebase en vista
+                              //uploadData(idAccount);
+                              Navigator.of(context).pop();
+                            },
+                          );
+                          leadingImage:
+                          'assets/info.gif';
+                          Navigator.of(context).pop();
+                        }
+                      },
+                      child: Text(
+                        "Agregar",
+                        style: TextStyle(
+                            fontSize: 20,
+                            color: TColor.secondaryColor1,
+                            fontWeight: FontWeight.w700),
+                      ),
+                    ))
+              ],
+            );
+          });
+        });
+  }
+
   /*cleanDataUser() {
     nameController.clear();
     paymentController.clear();

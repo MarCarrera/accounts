@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 final urlgetAccounts =
     Uri.parse('https://marcarrera.000webhostapp.com/api-accounts/getAccounts');
@@ -37,7 +38,8 @@ final updatePinByIdUser = Uri.parse(
     'https://marcarrera.000webhostapp.com/api-accounts/updatePinByIdUser');
 final addTransaction = Uri.parse(
     'https://marcarrera.000webhostapp.com/api-accounts/addTransaction');
-
+final getTransaccionByAccount = Uri.parse(
+    'https://marcarrera.000webhostapp.com/api-accounts/getTransactionsByIdAccount');
 //------------------------------------------------------------------------------------------------------------
 
 Future<dynamic> getAccounts() async {
@@ -73,6 +75,25 @@ Future<dynamic> getProfiles() async {
     final response = await http.post(
       urigetProfiles,
       //body: data,
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+      return jsonResponse;
+    }
+  } catch (e) {
+    return "err_internet_conex";
+  }
+}
+
+Future getTransaccionAccount(
+    String idAccount, String date1, String date2) async {
+  var data = {'idAccount': idAccount, 'date1': date1, 'date2': date2};
+
+  try {
+    final response = await http.post(
+      getTransaccionByAccount,
+      body: data,
     );
 
     if (response.statusCode == 200) {
@@ -475,19 +496,19 @@ Future<void> deletePaymentByPay({
 
 Future<void> addNewTransaction({
   required String reason,
-  required String transaction,
-  required String date,
   required String amount,
-  required String status,
+  required String idAccount,
 }) async {
-  // var url = 'tu_url_de_actualizacion'; // Reemplaza esto con la URL correcta de tu API
+  DateTime now = DateTime.now();
+  String currentDate = DateFormat('yyyy-MM-dd').format(now);
 
   var data = {
+    'idAccount': idAccount,
     'reason': reason,
-    'transaction': transaction,
-    'date': date,
+    'transaction': '6',
+    'date': currentDate,
     'amount': amount,
-    'status': status,
+    'status': 'Liquidado',
   };
 
   try {

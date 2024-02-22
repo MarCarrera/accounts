@@ -73,9 +73,11 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
   List<String> paymentDateAccountA = [];
   List<String> arrayNameUsersAccountA = [];
   List<String> arrayPaymentAmountA = [];
+  List<String> arrayTransactions = [];
   bool showDataPaymentA = false;
   List<double> arrayTotalPay = [];
   double totalPagado = 0.0;
+  double total = 0.0;
   double ganancia = 0.0;
   double liquidar = 0.0;
   double envio = 0.0;
@@ -99,7 +101,7 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
     var response =
         await getPaymentsProfilesByAccountDate(idAccount, date1, date2);
     if (response != "err_internet_conex") {
-      print('Respuesta pagos cuenta :::: $response');
+      //print('Respuesta pagos cuenta :::: $response');
       setState(() {
         //isLoading = false;
         if (response == 'empty') {
@@ -122,7 +124,7 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
               double? amountPayA = double.tryParse(response[i]['amountPay']);
               totalPagado += amountPayA ?? 0.0;
               ganancia = totalPagado - 299;
-              liquidar = ganancia - retiro;
+              liquidar = ganancia - total;
               if (totalPagado > 299) {
                 envio = totalPagado - ganancia - enviado;
               }
@@ -166,6 +168,37 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
     }
   }
 
+  //OBTENER PAGOS DE CUENTA-------------------------------
+  Future<void> obtenerTransaccionesCuenta(String idAccount) async {
+    var response = await getTransaccionAccount(idAccount, date1, date2);
+    if (response != "err_internet_conex") {
+      print('Respuesta transacciones cuenta :::: $response');
+      setState(() {
+        //isLoading = false;
+        if (response == 'empty') {
+        } else {
+          arrayTransactions.clear();
+          total = 0.0;
+          // arrayTotalPay.clear();
+
+          if (paymentDateAccountA.isEmpty &&
+              arrayNameUsersAccountA.isEmpty &&
+              arrayPaymentAmountA.isEmpty) {
+            for (int i = 0; i < response.length; i++) {
+              arrayTransactions.add(response[i]['amount'].toString());
+              double? amountTran = double.tryParse(response[i]['amount']);
+              total += amountTran ?? 0.0;
+            }
+            //arrayTotalPay.add(total);
+            print("total transaccion::::: $total ");
+          }
+        }
+      });
+    } else {
+      print('Sin conexion');
+    }
+  }
+
   Future<void> handleRefreshFunction() async {
     print('Refresh_Done');
     obtenerPagosCuenta(idAccount, date1, date2);
@@ -179,6 +212,7 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
     super.initState();
     obtenerPagosCuenta(idAccount, date1, date2);
     obtenerPerfilesCuenta(idAccount);
+    obtenerTransaccionesCuenta(idAccount);
   }
 
   @override
@@ -315,19 +349,22 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
                       ),
                       Row(
                         children: [
-                          GestureDetector(
-                            onTap: () {
-                              print('Agregando transaccion...');
-                              ShowInputDialog().showAddTransaction(
-                                  context, reasonController, amountController);
-                            },
-                            child: Expanded(
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                print('Agregando transaccion...');
+                                ShowInputDialog().showAddTransaction(
+                                    context,
+                                    idAccount,
+                                    reasonController,
+                                    amountController);
+                              },
                               child: TodayTargetTwoCell(
                                 icon: "assets/icons/fondos.png",
                                 value1:
                                     liquidar < 0 ? '00.0' : liquidar.toString(),
                                 title1: "Pendiente",
-                                value2: retiro.toString(),
+                                value2: total.toString(),
                                 title2: "Liquidado",
                               ),
                             ),
