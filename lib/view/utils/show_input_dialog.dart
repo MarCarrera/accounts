@@ -229,11 +229,11 @@ class ShowInputDialog {
   }
 
   Future<void> showAddTransaction(
-    BuildContext context,
-    String idAccount,
-    TextEditingController reasonController,
-    TextEditingController amountController,
-  ) async {
+      BuildContext context,
+      String idAccount,
+      TextEditingController reasonController,
+      TextEditingController amountController,
+      TextEditingController statusController) async {
     return await showDialog(
         context: context,
         builder: (context) {
@@ -254,6 +254,11 @@ class ShowInputDialog {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Divider(height: 30, color: TColor.secondaryColor1),
+                      TextForm(
+                          controller: statusController,
+                          text: 'Estado',
+                          icon: Icons.person_2),
+                      const SizedBox(height: 10),
                       TextForm(
                           controller: reasonController,
                           text: 'Razón',
@@ -301,10 +306,10 @@ class ShowInputDialog {
                               print('datos guardados');
                               //request para guardar los datos de usuario en Firebase
                               await addNewTransaction(
-                                reason: reasonController.text,
-                                amount: amountController.text,
-                                idAccount: idAccount,
-                              );
+                                  reason: reasonController.text,
+                                  amount: amountController.text,
+                                  idAccount: idAccount,
+                                  status: statusController.text);
                               //limpiar controladores de data usuario
                               //cleanDataUser();
 

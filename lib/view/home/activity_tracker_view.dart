@@ -39,6 +39,7 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
 
   TextEditingController reasonController = TextEditingController();
   TextEditingController amountController = TextEditingController();
+  TextEditingController statusController = TextEditingController();
 
   int touchedIndex = -1;
 
@@ -73,11 +74,13 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
   List<String> paymentDateAccountA = [];
   List<String> arrayNameUsersAccountA = [];
   List<String> arrayPaymentAmountA = [];
-  List<String> arrayTransactions = [];
+  List<String> arrayTransactionsL = [];
+  List<String> arrayTransactionsE = [];
   bool showDataPaymentA = false;
   List<double> arrayTotalPay = [];
   double totalPagado = 0.0;
-  double total = 0.0;
+  double totalE = 0.0;
+  double totalL = 0.0;
   double ganancia = 0.0;
   double liquidar = 0.0;
   double envio = 0.0;
@@ -124,9 +127,9 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
               double? amountPayA = double.tryParse(response[i]['amountPay']);
               totalPagado += amountPayA ?? 0.0;
               ganancia = totalPagado - 299;
-              liquidar = ganancia - total;
+              liquidar = ganancia - totalL;
               if (totalPagado > 299) {
-                envio = totalPagado - ganancia - enviado;
+                envio = totalPagado - ganancia - totalE;
               }
             }
             arrayTotalPay.add(totalPagado);
@@ -169,28 +172,48 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
   }
 
   //OBTENER PAGOS DE CUENTA-------------------------------
-  Future<void> obtenerTransaccionesCuenta(String idAccount) async {
-    var response = await getTransaccionAccount(idAccount, date1, date2);
+  Future<void> obtenerTransaccionesCuenta(
+      String idAccount, String status) async {
+    var response =
+        await getTransaccionAccountStatus(idAccount, status, date1, date2);
     if (response != "err_internet_conex") {
       print('Respuesta transacciones cuenta :::: $response');
       setState(() {
         //isLoading = false;
         if (response == 'empty') {
         } else {
-          arrayTransactions.clear();
-          total = 0.0;
-          // arrayTotalPay.clear();
+          if (status == 'Liquidado') {
+            arrayTransactionsL.clear();
+            totalL = 0.0;
+            // arrayTotalPay.clear();
 
-          if (paymentDateAccountA.isEmpty &&
-              arrayNameUsersAccountA.isEmpty &&
-              arrayPaymentAmountA.isEmpty) {
-            for (int i = 0; i < response.length; i++) {
-              arrayTransactions.add(response[i]['amount'].toString());
-              double? amountTran = double.tryParse(response[i]['amount']);
-              total += amountTran ?? 0.0;
+            if (paymentDateAccountA.isEmpty &&
+                arrayNameUsersAccountA.isEmpty &&
+                arrayPaymentAmountA.isEmpty) {
+              for (int i = 0; i < response.length; i++) {
+                arrayTransactionsL.add(response[i]['amount'].toString());
+                double? amountTran = double.tryParse(response[i]['amount']);
+                totalL += amountTran ?? 0.0;
+              }
+              //arrayTotalPay.add(total);
+              print("total transaccion::::: $totalL ");
             }
-            //arrayTotalPay.add(total);
-            print("total transaccion::::: $total ");
+          } else {
+            arrayTransactionsE.clear();
+            totalE = 0.0;
+            // arrayTotalPay.clear();
+
+            if (paymentDateAccountA.isEmpty &&
+                arrayNameUsersAccountA.isEmpty &&
+                arrayPaymentAmountA.isEmpty) {
+              for (int i = 0; i < response.length; i++) {
+                arrayTransactionsE.add(response[i]['amount'].toString());
+                double? amountTran = double.tryParse(response[i]['amount']);
+                totalE += amountTran ?? 0.0;
+              }
+              //arrayTotalPay.add(total);
+              print("total transaccion::::: $totalE ");
+            }
           }
         }
       });
@@ -212,7 +235,8 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
     super.initState();
     obtenerPagosCuenta(idAccount, date1, date2);
     obtenerPerfilesCuenta(idAccount);
-    obtenerTransaccionesCuenta(idAccount);
+    obtenerTransaccionesCuenta(idAccount, 'Liquidado');
+    obtenerTransaccionesCuenta(idAccount, 'Enviado');
   }
 
   @override
@@ -354,17 +378,19 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
                               onTap: () {
                                 print('Agregando transaccion...');
                                 ShowInputDialog().showAddTransaction(
-                                    context,
-                                    idAccount,
-                                    reasonController,
-                                    amountController);
+                                  context,
+                                  idAccount,
+                                  reasonController,
+                                  amountController,
+                                  statusController,
+                                );
                               },
                               child: TodayTargetTwoCell(
                                 icon: "assets/icons/fondos.png",
                                 value1:
                                     liquidar < 0 ? '00.0' : liquidar.toString(),
                                 title1: "Pendiente",
-                                value2: total.toString(),
+                                value2: totalL.toString(),
                                 title2: "Liquidado",
                               ),
                             ),
@@ -373,12 +399,23 @@ class _ActivityTrackerViewState extends State<ActivityTrackerView> {
                             width: 15,
                           ),
                           Expanded(
-                            child: TodayTargetTwoCell(
-                              icon: "assets/icons/bank.png",
-                              value1: envio < 0 ? '00.0' : envio.toString(),
-                              title1: "Pendiente",
-                              value2: enviado.toString(),
-                              title2: "Enviado",
+                            child: GestureDetector(
+                              onTap: () {
+                                print('Agregando transaccion...');
+                                ShowInputDialog().showAddTransaction(
+                                    context,
+                                    idAccount,
+                                    reasonController,
+                                    amountController,
+                                    statusController);
+                              },
+                              child: TodayTargetTwoCell(
+                                icon: "assets/icons/bank.png",
+                                value1: envio < 0 ? '00.0' : envio.toString(),
+                                title1: "Pendiente",
+                                value2: totalE.toString(),
+                                title2: "Enviado",
+                              ),
                             ),
                           ),
                         ],

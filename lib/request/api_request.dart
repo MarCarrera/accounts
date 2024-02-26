@@ -38,8 +38,8 @@ final updatePinByIdUser = Uri.parse(
     'https://marcarrera.000webhostapp.com/api-accounts/updatePinByIdUser');
 final addTransaction = Uri.parse(
     'https://marcarrera.000webhostapp.com/api-accounts/addTransaction');
-final getTransaccionByAccount = Uri.parse(
-    'https://marcarrera.000webhostapp.com/api-accounts/getTransactionsByIdAccount');
+final getTransaccionByAccountStatus = Uri.parse(
+    'https://marcarrera.000webhostapp.com/api-accounts/getTransactionsByIdAccountStatus');
 //------------------------------------------------------------------------------------------------------------
 
 Future<dynamic> getAccounts() async {
@@ -86,13 +86,18 @@ Future<dynamic> getProfiles() async {
   }
 }
 
-Future getTransaccionAccount(
-    String idAccount, String date1, String date2) async {
-  var data = {'idAccount': idAccount, 'date1': date1, 'date2': date2};
+Future getTransaccionAccountStatus(
+    String idAccount, String status, String date1, String date2) async {
+  var data = {
+    'idAccount': idAccount,
+    'status': status,
+    'date1': date1,
+    'date2': date2
+  };
 
   try {
     final response = await http.post(
-      getTransaccionByAccount,
+      getTransaccionByAccountStatus,
       body: data,
     );
 
@@ -498,6 +503,7 @@ Future<void> addNewTransaction({
   required String reason,
   required String amount,
   required String idAccount,
+  required String status,
 }) async {
   DateTime now = DateTime.now();
   String currentDate = DateFormat('yyyy-MM-dd').format(now);
@@ -508,7 +514,7 @@ Future<void> addNewTransaction({
     'transaction': '6',
     'date': currentDate,
     'amount': amount,
-    'status': 'Liquidado',
+    'status': status,
   };
 
   try {
