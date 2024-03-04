@@ -1,6 +1,7 @@
 // ignore_for_file: no_logic_in_create_state
 
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
+import 'package:fitness/common_widget/all_money.dart';
 import 'package:fitness/common_widget/setting_row.dart';
 import 'package:fitness/common_widget/today_target_cell.dart';
 import 'package:fitness/common_widget/today_target_four_cell.dart';
@@ -49,19 +50,10 @@ class _SelectViewState extends State<SelectView> {
   List<String> arrayAmount = [];
   List<String> arrayStatus = [];
   List<String> arrayIdAccount = [];
+  List<String> arrayAmountMoney = [];
+  List<String> arrayDescription = [];
+  List<String> arrayIdMoney = [];
 
-  // List<String> paymentDateUserB = [];
-  // List<String> arrayPaymentStatusB = [];
-  // List<String> arrayPaymentAmountB = [];
-  // List<String> paymentDateUserC = [];
-  // List<String> arrayPaymentStatusC = [];
-  // List<String> arrayPaymentAmountC = [];
-  // List<String> paymentDateUserD = [];
-  // List<String> arrayPaymentStatusD = [];
-  // List<String> arrayPaymentAmountD = [];
-  // List<String> paymentDateUserE = [];
-  // List<String> arrayPaymentStatusE = [];
-  // List<String> arrayPaymentAmountE = [];
   //CONTROLADORES----------------------------------------------------------------
   final TextEditingController nameController = TextEditingController();
 
@@ -123,6 +115,34 @@ class _SelectViewState extends State<SelectView> {
     }
   }
 
+  Future<void> obtenerDinero() async {
+    var response = await getAllMoney();
+    if (response != "err_internet_conex") {
+      print('Respuesta dinero:::: $response');
+      setState(() {
+        //isLoading = false;
+        if (response == 'empty') {
+        } else {
+          arrayIdMoney.clear();
+          arrayDescription.clear();
+          arrayAmountMoney.clear();
+
+          if (arrayDescription.isEmpty) {
+            for (int i = 0; i < response.length; i++) {
+              arrayIdMoney.add(response[i]['idMoney'].toString());
+              arrayDescription.add(response[i]['description'].toString());
+              arrayAmountMoney.add(response[i]['amount'].toString());
+            }
+          }
+          print(arrayDescription);
+          print(arrayAmountMoney);
+        }
+      });
+    } else {
+      print('Sin conexion');
+    }
+  }
+
   Future<void> handleRefreshFunction() async {
     print('Refresh_Done');
     obtenerTransacciones();
@@ -133,6 +153,7 @@ class _SelectViewState extends State<SelectView> {
   void initState() {
     super.initState();
     obtenerTransacciones();
+    obtenerDinero();
   }
 
   @override
@@ -169,7 +190,49 @@ class _SelectViewState extends State<SelectView> {
                     const SizedBox(
                       height: 14,
                     ),
-                    //CONTENEDOR DE TARJETA O CARD DE PAGOS
+                    //CONTENEDOR DE TARJETA O CARD DE PAGOS -----------------------------
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 15, horizontal: 15),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(colors: [
+                          TColor.primaryColor2.withOpacity(0.3),
+                          TColor.primaryColor1.withOpacity(0.3)
+                        ]),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Column(
+                        children: [
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          //LISTA DE PAGOS-------------------------------
+                          ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: arrayIdMoney.length,
+                            itemBuilder: (context, index) {
+                              return Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                  AllMoney(
+                                    icon: "assets/icons/dinero.png",
+                                    value: arrayAmountMoney[index],
+                                    title: arrayDescription[index],
+                                  ),
+                                ],
+                              );
+                            },
+                          )
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: media.width * 0.1,
+                    ),
+                    //CONTENEDOR DE TARJETA O CARD DE PAGOS -----------------------------
                     Container(
                       padding: const EdgeInsets.symmetric(
                           vertical: 15, horizontal: 15),

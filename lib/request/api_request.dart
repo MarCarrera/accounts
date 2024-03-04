@@ -42,15 +42,11 @@ final getTransaccionByAccountStatus = Uri.parse(
     'https://marcarrera.000webhostapp.com/api-accounts/getTransactionsByIdAccountStatus');
 final transactions = Uri.parse(
     'https://marcarrera.000webhostapp.com/api-accounts/getTransactions');
+final allMoney =
+    Uri.parse('https://marcarrera.000webhostapp.com/api-accounts/getAllMoney');
 //------------------------------------------------------------------------------------------------------------
 
 Future<dynamic> getAccounts() async {
-  /*var data = {
-    'opcion': '1',
-    'correo': parametros["correo"],
-    'contrasena': parametros["contrasena"],
-  };*/
-
   try {
     final response = await http.get(
       urlgetAccounts,
@@ -101,6 +97,22 @@ Future getTransaccionAccountStatus(
     final response = await http.post(
       getTransaccionByAccountStatus,
       body: data,
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+      return jsonResponse;
+    }
+  } catch (e) {
+    return "err_internet_conex";
+  }
+}
+
+Future<dynamic> getAllMoney() async {
+  try {
+    final response = await http.post(
+      allMoney,
+      //body: data,
     );
 
     if (response.statusCode == 200) {
